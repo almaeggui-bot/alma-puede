@@ -156,27 +156,15 @@
 <footer>Hecho con cariño para Alma 🎨💛</footer>
 
 <script>
-const APP_VERSION = 'v1.2';
+const APP_VERSION = 'v1.1';
 document.getElementById('appVersion').textContent = APP_VERSION;
 
 const STORAGE_KEY = 'alma-aprender-progreso';
-
-// Registro silencioso de progreso (planilla propia y privada, no visible
-// para ella). Nunca cambia nada de lo que ella ve en pantalla.
-const PROGRESO_URL = 'https://script.google.com/macros/s/AKfycby5xMMGYeBOs69tdbRQuaA3sFTMWPpJCCYcYUb_MYaDYvfZD3Ry9bXUxmK_RllMM-0JqA/exec';
-const USUARIO = 'Alma';
-
-function registrarEnPlanilla(correcta) {
-  const url = `${PROGRESO_URL}?action=registrarPractica&data=` +
-    encodeURIComponent(JSON.stringify({ usuario: USUARIO, modo, nivel, correcta, usoPista: pistaUsada }));
-  fetch(url).catch(() => {}); // silencioso: si falla, no interrumpe la práctica
-}
 
 let modo = 'suma'; // 'suma' | 'mult'
 let nivel = 1;
 let a = 1, b = 1, esperado = 2;
 let yaRespondioMal = false;
-let pistaUsada = false;
 
 const frasesOk = [
   '¡Muy bien! 🌟',
@@ -216,7 +204,6 @@ function generarProblema() {
   document.getElementById('feedback').className = 'feedback';
   document.getElementById('hintBox').classList.remove('show');
   yaRespondioMal = false;
-  pistaUsada = false;
   mostrarAccionesIniciales();
   setTimeout(() => document.getElementById('respuesta').focus(), 50);
 }
@@ -231,7 +218,6 @@ function mostrarAccionesIniciales() {
 }
 
 function mostrarPista() {
-  pistaUsada = true;
   const box = document.getElementById('hintBox');
   let texto = '';
   if (modo === 'suma') {
@@ -255,13 +241,11 @@ function verificar() {
     feedback.textContent = elegir(frasesOk);
     feedback.className = 'feedback ok';
     registrarPracticada();
-    registrarEnPlanilla(true);
     document.getElementById('actions').innerHTML =
       `<button class="action btn-continue" id="btnContinuar">Siguiente →</button>`;
     document.getElementById('btnContinuar').addEventListener('click', generarProblema);
   } else if (!yaRespondioMal) {
     yaRespondioMal = true;
-    registrarEnPlanilla(false);
     feedback.textContent = `${elegir(frasesGentiles)} ${esperado}. ¿Seguimos?`;
     feedback.className = 'feedback gentle';
     document.getElementById('actions').innerHTML =
