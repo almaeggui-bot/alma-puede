@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🎨 Alma · Aprender</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { overscroll-behavior: contain; }
+
+  body {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center;
+    font-family: 'Quicksand', system-ui, sans-serif;
+    background: linear-gradient(160deg, #fdf4e7 0%, #fbe9d7 40%, #f6d9d0 100%);
+    padding: 24px 16px 50px;
+    color: #4a3b34;
+  }
+
+  .header { text-align: center; margin-bottom: 6px; }
+  .header .emoji { font-size: 1.8rem; }
+  .header h1 {
+    font-size: clamp(1.4rem, 6vw, 1.85rem); font-weight: 700; color: #7a5a4a;
+  }
+  .header .sub { font-size: 0.8rem; color: #b08a6f; margin-top: 2px; }
+  .app-version { font-size: 0.6rem; color: #d1b8a3; margin-top: 6px; }
+
+  .reassurance {
+    max-width: 380px; text-align: center; font-size: 0.78rem; color: #a3806c;
+    background: rgba(255,255,255,0.5); border-radius: 14px; padding: 10px 16px;
+    margin: 14px 0; line-height: 1.5;
+  }
+
+  .selectors { display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 380px; margin-bottom: 8px; }
+  .selector-row { display: flex; gap: 8px; }
+  .pill {
+    flex: 1; text-align: center; padding: 10px 8px; border-radius: 999px;
+    background: #fff; border: 2px solid transparent; color: #a3806c;
+    font-family: inherit; font-weight: 600; font-size: 0.85rem; cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .pill.active { background: #f4a896; color: #fff; border-color: #f4a896; }
+  .pill.active.mult { background: #a6c8a0; border-color: #a6c8a0; }
+
+  .card {
+    width: 100%; max-width: 380px;
+    background: #fffdfa;
+    border-radius: 22px;
+    padding: 32px 24px;
+    margin-top: 18px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(180, 140, 110, 0.15);
+  }
+
+  .problem {
+    font-size: clamp(2.2rem, 11vw, 3rem); font-weight: 700; color: #6b4f42;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-bottom: 22px;
+  }
+  .problem .op { color: #d8ab97; }
+  .problem input {
+    width: 3ch; text-align: center; font-family: inherit;
+    font-size: inherit; font-weight: 700; color: #6b4f42;
+    background: #fdf1e9; border: 3px solid #f0d9c8; border-radius: 14px;
+    padding: 2px 6px; outline: none;
+  }
+  .problem input:focus { border-color: #f4a896; }
+
+  .feedback {
+    min-height: 44px; font-size: 0.95rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    margin-bottom: 12px;
+  }
+  .feedback.ok { color: #6a9a5f; }
+  .feedback.gentle { color: #c98a5e; }
+
+  .hint-box {
+    display: none; background: #fdf1e9; border-radius: 14px; padding: 12px 16px;
+    font-size: 0.82rem; color: #8a6a56; margin-bottom: 14px; line-height: 1.5;
+  }
+  .hint-box.show { display: block; }
+
+  .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  button.action {
+    font-family: inherit; font-weight: 600; font-size: 0.85rem;
+    border: none; border-radius: 999px; padding: 10px 20px; cursor: pointer;
+  }
+  .btn-check { background: #f4a896; color: #fff; }
+  .btn-check.mult { background: #a6c8a0; }
+  .btn-hint { background: transparent; color: #b08a6f; border: 2px solid #f0d9c8 !important; }
+  .btn-continue { background: #6b4f42; color: #fff; }
+
+  .stats {
+    display: flex; gap: 24px; margin-top: 22px;
+    background: rgba(255,255,255,0.5); padding: 10px 22px; border-radius: 14px;
+  }
+  .stat { text-align: center; }
+  .stat .num { font-size: 1.15rem; font-weight: 700; color: #7a5a4a; }
+  .stat .lbl { font-size: 0.62rem; color: #b08a6f; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  footer { margin-top: 26px; font-size: 0.72rem; color: #c9ac97; text-align: center; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <span class="emoji">🎨</span>
+  <h1>Aprender con calma</h1>
+  <div class="sub">versión Alma 💛</div>
+  <div class="app-version" id="appVersion"></div>
+</div>
+
+<div class="reassurance">
+  Sin reloj, sin perder. Practicá todo lo que quieras, a tu ritmo.
+  Vos elegís cuándo pasar a algo un poco más difícil.
+</div>
+
+<div class="selectors">
+  <div class="selector-row" id="modoRow">
+    <button class="pill active" data-modo="suma">➕ Sumas</button>
+    <button class="pill" data-modo="mult">✖️ Multiplicación</button>
+  </div>
+  <div class="selector-row" id="nivelRow">
+    <button class="pill active" data-nivel="1">Nivel 1</button>
+    <button class="pill" data-nivel="2">Nivel 2</button>
+    <button class="pill" data-nivel="3">Nivel 3</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="problem" id="problem">
+    <span id="pa">1</span>
+    <span class="op" id="pop">+</span>
+    <span id="pb">1</span>
+    <span class="op">=</span>
+    <input type="text" inputmode="numeric" id="respuesta" autocomplete="off">
+  </div>
+
+  <div class="feedback" id="feedback"></div>
+
+  <div class="hint-box" id="hintBox"></div>
+
+  <div class="actions" id="actions">
+    <button class="action btn-hint" id="btnHint">💡 Necesito una pista</button>
+    <button class="action btn-check" id="btnCheck">Ver si está bien</button>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="num" id="statHoy">0</div><div class="lbl">Practicadas hoy</div></div>
+  <div class="stat"><div class="num" id="statRacha">0</div><div class="lbl">Días seguidos</div></div>
+</div>
+
+<footer>Hecho con cariño para Alma 🎨💛</footer>
+
+<script>
+const APP_VERSION = 'v1.0';
+document.getElementById('appVersion').textContent = APP_VERSION;
+
+const STORAGE_KEY = 'alma-aprender-progreso';
+
+let modo = 'suma'; // 'suma' | 'mult'
+let nivel = 1;
+let a = 1, b = 1, esperado = 2;
+let yaRespondioMal = false;
+
+const frasesOk = [
+  '¡Muy bien! 🌟',
+  '¡Exacto! 💛',
+  '¡Así es! Vas genial.',
+  '¡Perfecto! 🎨',
+  '¡Eso es!'
+];
+const frasesGentiles = [
+  'Casi. La respuesta era',
+  'No pasa nada, la idea es practicar. Era',
+  'Vamos bien igual, esa era',
+  'Tranqui, era'
+];
+
+function elegir(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function generarProblema() {
+  if (modo === 'suma') {
+    if (nivel === 1) { a = rand(1, 5); b = rand(1, 5); }
+    else if (nivel === 2) { a = rand(1, 10); b = rand(1, 10); }
+    else { a = rand(5, 20); b = rand(5, 20); }
+    esperado = a + b;
+  } else {
+    if (nivel === 1) { const tablas = [1, 2, 5, 10]; a = elegir(tablas); b = rand(1, 10); }
+    else if (nivel === 2) { a = rand(1, 5); b = rand(1, 10); }
+    else { a = rand(2, 10); b = rand(2, 10); }
+    esperado = a * b;
+  }
+  document.getElementById('pa').textContent = a;
+  document.getElementById('pb').textContent = b;
+  document.getElementById('pop').textContent = modo === 'suma' ? '+' : '×';
+  document.getElementById('respuesta').value = '';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('hintBox').classList.remove('show');
+  yaRespondioMal = false;
+  mostrarAccionesIniciales();
+  setTimeout(() => document.getElementById('respuesta').focus(), 50);
+}
+
+function mostrarAccionesIniciales() {
+  document.getElementById('actions').innerHTML = `
+    <button class="action btn-hint" id="btnHint">💡 Necesito una pista</button>
+    <button class="action btn-check ${modo === 'mult' ? 'mult' : ''}" id="btnCheck">Ver si está bien</button>
+  `;
+  document.getElementById('btnHint').addEventListener('click', mostrarPista);
+  document.getElementById('btnCheck').addEventListener('click', verificar);
+}
+
+function mostrarPista() {
+  const box = document.getElementById('hintBox');
+  let texto = '';
+  if (modo === 'suma') {
+    texto = `Pensalo así: empezás en ${a} y contás ${b} más, de a uno: ` +
+      Array.from({ length: b }, (_, i) => a + i + 1).join(', ') + '.';
+  } else {
+    texto = `Pensalo como una suma repetida: ${Array(b).fill(a).join(' + ')} = ${esperado}.`;
+  }
+  box.textContent = texto;
+  box.classList.add('show');
+}
+
+function verificar() {
+  const valor = document.getElementById('respuesta').value.trim();
+  if (valor === '') return;
+
+  const feedback = document.getElementById('feedback');
+  const correcto = Number(valor) === esperado;
+
+  if (correcto) {
+    feedback.textContent = elegir(frasesOk);
+    feedback.className = 'feedback ok';
+    registrarPracticada();
+    document.getElementById('actions').innerHTML =
+      `<button class="action btn-continue" id="btnContinuar">Siguiente →</button>`;
+    document.getElementById('btnContinuar').addEventListener('click', generarProblema);
+  } else if (!yaRespondioMal) {
+    yaRespondioMal = true;
+    feedback.textContent = `${elegir(frasesGentiles)} ${esperado}. ¿Seguimos?`;
+    feedback.className = 'feedback gentle';
+    document.getElementById('actions').innerHTML =
+      `<button class="action btn-continue" id="btnContinuar">Seguimos →</button>`;
+    document.getElementById('btnContinuar').addEventListener('click', generarProblema);
+  }
+}
+
+document.getElementById('respuesta').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const btn = document.getElementById('btnCheck') || document.getElementById('btnContinuar');
+    if (btn) btn.click();
+  }
+});
+
+document.getElementById('modoRow').addEventListener('click', (e) => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  modo = btn.dataset.modo;
+  document.querySelectorAll('#modoRow .pill').forEach(p => p.classList.remove('active', 'mult'));
+  btn.classList.add('active');
+  if (modo === 'mult') btn.classList.add('mult');
+  generarProblema();
+});
+
+document.getElementById('nivelRow').addEventListener('click', (e) => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  nivel = Number(btn.dataset.nivel);
+  document.querySelectorAll('#nivelRow .pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  generarProblema();
+});
+
+// ─── Progreso local: practicadas hoy + racha de días, solo para ella ───
+function hoyStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+function cargarProgreso() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { fecha: '', hoy: 0, racha: 0, ultimoDia: '' };
+  } catch { return { fecha: '', hoy: 0, racha: 0, ultimoDia: '' }; }
+}
+
+function guardarProgreso(p) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(p));
+}
+
+function registrarPracticada() {
+  const p = cargarProgreso();
+  const hoy = hoyStr();
+  if (p.fecha !== hoy) {
+    // Nuevo día: actualizar racha
+    const ayer = new Date();
+    ayer.setDate(ayer.getDate() - 1);
+    const ayerStr = `${ayer.getFullYear()}-${ayer.getMonth()+1}-${ayer.getDate()}`;
+    p.racha = (p.fecha === ayerStr) ? p.racha + 1 : 1;
+    p.fecha = hoy;
+    p.hoy = 0;
+  }
+  p.hoy += 1;
+  guardarProgreso(p);
+  actualizarStats(p);
+}
+
+function actualizarStats(p) {
+  document.getElementById('statHoy').textContent = p.hoy;
+  document.getElementById('statRacha').textContent = p.racha || (p.fecha === hoyStr() ? 1 : 0);
+}
+
+// Inicializar stats al cargar (sin sumar una practicada todavía)
+(function initStats() {
+  const p = cargarProgreso();
+  document.getElementById('statHoy').textContent = (p.fecha === hoyStr()) ? p.hoy : 0;
+  document.getElementById('statRacha').textContent = p.racha || 0;
+})();
+
+generarProblema();
+</script>
+</body>
+</html>
