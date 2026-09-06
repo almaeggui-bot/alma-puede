@@ -210,14 +210,14 @@
   <div class="stat"><div class="num" id="statRacha">0</div><div class="lbl">Días seguidos</div></div>
 </div>
 
-<button class="nirvana-link" id="btnVerAlbum">🎸 Ver mis datos de Nirvana</button>
+<button class="nirvana-link" id="btnVerAlbum">🎸 Mis descubrimientos</button>
 
 <footer>Hecho con cariño para Alma 🎨💛</footer>
 
 <div class="modal-overlay" id="modalDato">
   <div class="modal-box">
     <span class="icono">🎸</span>
-    <h3>¡Dato Nirvana desbloqueado!</h3>
+    <h3>Encontraste algo ✨</h3>
     <div class="contador" id="datoContador"></div>
     <div class="texto-dato" id="datoTexto"></div>
     <button id="btnCerrarDato">Genial</button>
@@ -226,7 +226,7 @@
 
 <div class="album-overlay" id="modalAlbum">
   <div class="album-box">
-    <h3>🎸 Tus datos de Nirvana</h3>
+    <h3>🎸 Tus descubrimientos</h3>
     <div class="contador" id="albumContador"></div>
     <div class="album-lista" id="albumLista"></div>
     <button class="btn-cerrar-album" id="btnCerrarAlbum">Cerrar</button>
@@ -234,7 +234,7 @@
 </div>
 
 <script>
-const APP_VERSION = 'v1.4';
+const APP_VERSION = 'v1.5';
 document.getElementById('appVersion').textContent = APP_VERSION;
 
 const STORAGE_KEY = 'alma-aprender-progreso';
@@ -348,28 +348,70 @@ const DATOS_NIRVANA = [
 
 function cargarNirvana() {
   try {
-    return JSON.parse(localStorage.getItem(NIRVANA_KEY)) || { totalCorrectas: 0, desbloqueados: 0 };
-  } catch { return { totalCorrectas: 0, desbloqueados: 0 }; }
+    return JSON.parse(localStorage.getItem(NIRVANA_KEY)) ||
+      { totalCorrectas: 0, desbloqueados: 0, proximoEn: null, historial: [] };
+  } catch {
+    return { totalCorrectas: 0, desbloqueados: 0, proximoEn: null, historial: [] };
+  }
 }
 function guardarNirvana(n) { localStorage.setItem(NIRVANA_KEY, JSON.stringify(n)); }
 
-function registrarAciertoNirvana() {
-  const n = cargarNirvana();
-  n.totalCorrectas += 1;
-  let desbloqueadoNuevo = false;
-  if (n.totalCorrectas % 10 === 0 && n.desbloqueados < DATOS_NIRVANA.length) {
-    n.desbloqueados += 1;
-    desbloqueadoNuevo = true;
-  }
-  guardarNirvana(n);
-  if (desbloqueadoNuevo) {
-    mostrarDatoDesbloqueado(n.desbloqueados);
+// Cuántos aciertos hasta el próximo descubrimiento: variable y nunca visible,
+// para que no se sienta como una cuenta regresiva predecible.
+function proximoUmbral() {
+  return 6 + Math.floor(Math.random() * 9); // entre 6 y 14
+}
+
+// Notas de la familia, cargadas una sola vez desde la planilla (pestaña "Notas").
+let NOTAS_FAMILIA = [];
+async function cargarNotasFamilia() {
+  try {
+    const r = await fetch(`${PROGRESO_URL}?action=obtenerNotas`);
+    const res = await r.json();
+    if (res.ok && Array.isArray(res.notas)) NOTAS_FAMILIA = res.notas;
+  } catch {
+    NOTAS_FAMILIA = []; // si falla, simplemente no aparecen notas por ahora
   }
 }
 
-function mostrarDatoDesbloqueado(cantidad) {
-  document.getElementById('datoTexto').textContent = DATOS_NIRVANA[cantidad - 1];
-  document.getElementById('datoContador').textContent = `Dato ${cantidad} de ${DATOS_NIRVANA.length}`;
+function registrarAciertoNirvana() {
+  const n = cargarNirvana();
+  if (n.proximoEn === null) n.proximoEn = proximoUmbral();
+  n.totalCorrectas += 1;
+
+  if (n.totalCorrectas >= n.proximoEn) {
+    n.proximoEn = n.totalCorrectas + proximoUmbral();
+    // ~75% dato de Nirvana (en orden, mientras queden), ~25% nota de la familia
+    const hayNotas = NOTAS_FAMILIA.length > 0;
+    const tocaNota = hayNotas && Math.random() < 0.25;
+
+    if (!tocaNota && n.desbloqueados < DATOS_NIRVANA.length) {
+      n.desbloqueados += 1;
+      n.historial.push({ tipo: 'nirvana', indice: n.desbloqueados - 1 });
+      guardarNirvana(n);
+      mostrarDescubrimiento(DATOS_NIRVANA[n.desbloqueados - 1], '🎸');
+    } else if (hayNotas) {
+      const nota = NOTAS_FAMILIA[Math.floor(Math.random() * NOTAS_FAMILIA.length)];
+      n.historial.push({ tipo: 'nota', texto: nota });
+      guardarNirvana(n);
+      mostrarDescubrimiento(nota, '❤️');
+    } else if (n.desbloqueados < DATOS_NIRVANA.length) {
+      n.desbloqueados += 1;
+      n.historial.push({ tipo: 'nirvana', indice: n.desbloqueados - 1 });
+      guardarNirvana(n);
+      mostrarDescubrimiento(DATOS_NIRVANA[n.desbloqueados - 1], '🎸');
+    } else {
+      guardarNirvana(n); // ya no queda nada nuevo por ahora
+    }
+  } else {
+    guardarNirvana(n);
+  }
+}
+
+function mostrarDescubrimiento(texto, icono) {
+  document.getElementById('datoTexto').textContent = texto;
+  document.getElementById('datoContador').textContent = '';
+  document.querySelector('#modalDato .icono').textContent = icono;
   document.getElementById('modalDato').classList.add('activo');
 }
 
@@ -377,13 +419,15 @@ function mostrarAlbum() {
   const n = cargarNirvana();
   const lista = document.getElementById('albumLista');
   document.getElementById('albumContador').textContent =
-    `${n.desbloqueados} de ${DATOS_NIRVANA.length} datos descubiertos`;
-  if (n.desbloqueados === 0) {
-    lista.innerHTML = '<div class="album-vacio">Todavía no desbloqueaste ningún dato. ¡Seguí practicando, cada 10 aciertos aparece uno nuevo!</div>';
+    n.historial.length === 0 ? '' : `${n.historial.length} descubrimientos hasta ahora`;
+  if (n.historial.length === 0) {
+    lista.innerHTML = '<div class="album-vacio">Todavía no descubriste nada. Seguí practicando, en algún momento va a aparecer algo nuevo.</div>';
   } else {
-    lista.innerHTML = DATOS_NIRVANA.slice(0, n.desbloqueados).map((d, i) =>
-      `<div class="album-item"><span class="num">${i + 1}.</span><span>${d}</span></div>`
-    ).join('');
+    lista.innerHTML = n.historial.slice().reverse().map((h) => {
+      const texto = h.tipo === 'nirvana' ? DATOS_NIRVANA[h.indice] : h.texto;
+      const icono = h.tipo === 'nirvana' ? '🎸' : '❤️';
+      return `<div class="album-item"><span class="num">${icono}</span><span>${texto}</span></div>`;
+    }).join('');
   }
   document.getElementById('modalAlbum').classList.add('activo');
 }
@@ -398,6 +442,7 @@ document.getElementById('btnCerrarDato').addEventListener('click', () =>
 // para ella). Nunca cambia nada de lo que ella ve en pantalla.
 const PROGRESO_URL = 'https://script.google.com/macros/s/AKfycby5xMMGYeBOs69tdbRQuaA3sFTMWPpJCCYcYUb_MYaDYvfZD3Ry9bXUxmK_RllMM-0JqA/exec';
 const USUARIO = 'Alma';
+cargarNotasFamilia();
 
 function registrarEnPlanilla(correcta, respuestaDada) {
   const operacion = `${a} ${modo === 'suma' ? '+' : '×'} ${b}`;
