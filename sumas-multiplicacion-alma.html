@@ -101,6 +101,63 @@
   .stat .lbl { font-size: 0.62rem; color: #b08a6f; text-transform: uppercase; letter-spacing: 0.5px; }
 
   footer { margin-top: 26px; font-size: 0.72rem; color: #c9ac97; text-align: center; }
+
+  /* ─── Datos Nirvana ─── */
+  .nirvana-link {
+    margin-top: 10px; background: none; border: none; color: #a3806c;
+    font-family: inherit; font-size: 0.78rem; text-decoration: underline;
+    cursor: pointer; padding: 6px;
+  }
+
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 999;
+    background: rgba(74, 59, 52, 0.55);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.activo { display: flex; }
+  .modal-box {
+    background: #1a1a1a; color: #f2ede6; border-radius: 18px;
+    padding: 26px 24px; max-width: 360px; width: 100%; text-align: center;
+    box-shadow: 0 14px 36px rgba(0,0,0,0.4);
+  }
+  .modal-box .icono { font-size: 2rem; }
+  .modal-box h3 {
+    font-size: 1.05rem; color: #f5c518; margin: 6px 0 4px;
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+  .modal-box .contador { font-size: 0.7rem; color: #999; margin-bottom: 14px; }
+  .modal-box .texto-dato { font-size: 0.95rem; line-height: 1.5; margin-bottom: 20px; }
+  .modal-box button {
+    background: #f5c518; color: #1a1a1a; border: none; padding: 10px 26px;
+    border-radius: 999px; font-weight: 700; font-family: inherit;
+    font-size: 0.85rem; cursor: pointer;
+  }
+
+  .album-overlay {
+    display: none; position: fixed; inset: 0; z-index: 998;
+    background: rgba(74, 59, 52, 0.55);
+    align-items: flex-start; justify-content: center; padding: 20px;
+    overflow-y: auto;
+  }
+  .album-overlay.activo { display: flex; }
+  .album-box {
+    background: #1a1a1a; color: #f2ede6; border-radius: 18px;
+    padding: 22px 20px; max-width: 420px; width: 100%; margin-top: 30px;
+  }
+  .album-box h3 { color: #f5c518; text-align: center; margin-bottom: 4px; }
+  .album-box .contador { text-align: center; font-size: 0.75rem; color: #999; margin-bottom: 16px; }
+  .album-lista { display: flex; flex-direction: column; gap: 10px; max-height: 55vh; overflow-y: auto; }
+  .album-item {
+    background: #262626; border-radius: 12px; padding: 10px 14px;
+    font-size: 0.85rem; line-height: 1.4; display: flex; gap: 10px;
+  }
+  .album-item .num { color: #f5c518; font-weight: 700; flex-shrink: 0; }
+  .album-vacio { text-align: center; color: #888; font-size: 0.85rem; padding: 20px 0; }
+  .btn-cerrar-album {
+    display: block; margin: 16px auto 0; background: #f5c518; color: #1a1a1a;
+    border: none; padding: 9px 22px; border-radius: 999px; font-weight: 700;
+    font-family: inherit; font-size: 0.85rem; cursor: pointer;
+  }
 </style>
 </head>
 <body>
@@ -153,13 +210,189 @@
   <div class="stat"><div class="num" id="statRacha">0</div><div class="lbl">Días seguidos</div></div>
 </div>
 
+<button class="nirvana-link" id="btnVerAlbum">🎸 Ver mis datos de Nirvana</button>
+
 <footer>Hecho con cariño para Alma 🎨💛</footer>
 
+<div class="modal-overlay" id="modalDato">
+  <div class="modal-box">
+    <span class="icono">🎸</span>
+    <h3>¡Dato Nirvana desbloqueado!</h3>
+    <div class="contador" id="datoContador"></div>
+    <div class="texto-dato" id="datoTexto"></div>
+    <button id="btnCerrarDato">Genial</button>
+  </div>
+</div>
+
+<div class="album-overlay" id="modalAlbum">
+  <div class="album-box">
+    <h3>🎸 Tus datos de Nirvana</h3>
+    <div class="contador" id="albumContador"></div>
+    <div class="album-lista" id="albumLista"></div>
+    <button class="btn-cerrar-album" id="btnCerrarAlbum">Cerrar</button>
+  </div>
+</div>
+
 <script>
-const APP_VERSION = 'v1.3';
+const APP_VERSION = 'v1.4';
 document.getElementById('appVersion').textContent = APP_VERSION;
 
 const STORAGE_KEY = 'alma-aprender-progreso';
+const NIRVANA_KEY = 'alma-aprender-nirvana';
+
+// ─── Datos de Nirvana (verificados, se desbloquean de a uno) ───
+const DATOS_NIRVANA = [
+  "Nirvana se formó en 1987 en Aberdeen, Washington, por Kurt Cobain y Krist Novoselic.",
+  "Antes de llamarse Nirvana, la banda probó nombres como Skid Row, Pen Cap Chew, Bliss y Ted Ed Fred.",
+  "La primera vez que tocaron bajo el nombre \"Nirvana\" fue el 19 de marzo de 1988, en Tacoma, Washington.",
+  "Antes de Dave Grohl, la banda tuvo varios bateristas: Aaron Burckhard, Dale Crover (de Melvins), Dave Foster y Chad Channing.",
+  "Dave Grohl se unió a Nirvana en 1990, después de que su banda anterior, Scream, se separara en medio de una gira.",
+  "Kurt Cobain nació el 20 de febrero de 1967 en Aberdeen, Washington.",
+  "El padre de Kurt, Donald, trabajaba como mecánico, y su madre, Wendy, era mesera.",
+  "Kurt tenía una hermana menor, Kimberly, nacida en 1970.",
+  "A los 2 años, Kurt ya cantaba canciones de The Beatles y The Monkees.",
+  "A los 7 años, su tía Mari le regaló una batería de juguete.",
+  "Kurt empezó a tocar la guitarra a los 14 años, con Warren Mason como su primer profesor.",
+  "Kurt era zurdo, y tocaba guitarras adaptadas para zurdos.",
+  "Kurt trabajó como conserje en la escuela secundaria de la que se había ido sin graduarse.",
+  "Krist Novoselic conoció a Kurt en Aberdeen, Washington, antes de formar la banda.",
+  "El primer disco de Nirvana, \"Bleach\", se grabó en 1988 y costó apenas 606,17 dólares.",
+  "\"Bleach\" fue financiado por un amigo, Jason Everman, quien pagó la grabación y a cambio recibió crédito como segundo guitarrista, aunque nunca tocó en el disco.",
+  "\"Bleach\" se grabó en unas 30 horas de estudio, en Seattle.",
+  "El título original que Kurt tenía pensado para \"Bleach\" era \"Too Many Humans\".",
+  "\"Bleach\" salió el 15 de junio de 1989, bajo el sello independiente Sub Pop.",
+  "El baterista de Melvins, Dale Crover, tocó en tres canciones de \"Bleach\" antes de que existiera oficialmente la alineación final de la banda.",
+  "\"Nevermind\", el segundo álbum de Nirvana, salió el 24 de septiembre de 1991.",
+  "\"Nevermind\" debutó apenas en el puesto 144 de las listas de Billboard.",
+  "La discográfica solo esperaba vender unas 250.000 copias de \"Nevermind\" en total.",
+  "Gracias al éxito de \"Smells Like Teen Spirit\", \"Nevermind\" llegó a venderse hasta 300.000 copias por semana en su mejor momento.",
+  "El 11 de enero de 1992, \"Nevermind\" llegó al puesto número 1 de Billboard, desplazando a Michael Jackson.",
+  "\"Nevermind\" ha vendido más de 30 millones de copias en todo el mundo.",
+  "La icónica portada de \"Nevermind\", con un bebé nadando hacia un billete, surgió después de que Kurt viera un documental sobre partos en el agua.",
+  "Al bebé de la portada de \"Nevermind\" le pagaron 200 dólares por la sesión de fotos, cuando tenía solo 4 meses.",
+  "\"Smells Like Teen Spirit\" nació de una frase escrita en la pared del departamento de Kurt: \"Kurt huele a Teen Spirit\", en referencia a un desodorante.",
+  "Kurt no sabía que \"Teen Spirit\" era una marca de desodorante hasta meses después de que la canción fuera un éxito.",
+  "Kurt dijo que al componer \"Smells Like Teen Spirit\" estaba tratando de imitar el estilo de la banda Pixies.",
+  "\"Smells Like Teen Spirit\" es la única canción de \"Nevermind\" con crédito de composición para los tres integrantes de la banda.",
+  "La primera vez que tocaron \"Smells Like Teen Spirit\" en vivo fue el 17 de abril de 1991, en Seattle.",
+  "\"Smells Like Teen Spirit\" llegó al puesto número 6 en la lista Billboard Hot 100.",
+  "Otras canciones de \"Nevermind\" incluyen \"Come As You Are\", \"Lithium\" y \"In Bloom\".",
+  "En 1993, Nirvana sacó su tercer y último álbum de estudio: \"In Utero\".",
+  "Para \"In Utero\", la banda eligió al productor Steve Albini, buscando un sonido más crudo que el de \"Nevermind\".",
+  "\"In Utero\" se grabó en apenas dos semanas, en febrero de 1993, en un estudio llamado Pachyderm, en Minnesota.",
+  "\"In Utero\" debutó directo en el puesto número 1 de Billboard.",
+  "\"In Utero\" ha vendido más de 15 millones de copias en todo el mundo.",
+  "Uno de los singles de \"In Utero\" es \"Heart-Shaped Box\".",
+  "El 18 de noviembre de 1993, Nirvana grabó su famosa presentación acústica para MTV Unplugged, en Nueva York.",
+  "Para el escenario de MTV Unplugged, la banda pidió que lo decoraran con velas y flores, como si fuera un funeral.",
+  "El álbum \"MTV Unplugged in New York\" salió a la venta el 1 de noviembre de 1994.",
+  "\"MTV Unplugged in New York\" debutó en el puesto número 1 de Billboard.",
+  "\"MTV Unplugged in New York\" ganó el único Grammy que la banda obtuvo en toda su carrera: Mejor Álbum de Música Alternativa, en 1996.",
+  "En esa presentación de MTV Unplugged, Nirvana tocó covers de artistas como David Bowie y The Vaselines.",
+  "Kurt Cobain falleció en abril de 1994, a los 27 años.",
+  "En 2014, veinte años después, Nirvana fue incluida en el Salón de la Fama del Rock and Roll, en su primer año de elegibilidad.",
+  "Quien dio el discurso para meter a Nirvana al Salón de la Fama fue Michael Stipe, cantante de R.E.M. y amigo cercano de Kurt.",
+  "El logo más famoso de Nirvana es la carita sonriente con ojos en forma de X y la lengua afuera.",
+  "Ese logo apareció por primera vez en 1991, en un flyer para la fiesta de lanzamiento de \"Nevermind\".",
+  "No está del todo claro quién dibujó exactamente el logo de la carita: se le atribuye tanto a Kurt como a un diseñador gráfico de la disquera.",
+  "La tipografía que usa el nombre \"Nirvana\" en el logo se llama Onyx.",
+  "La palabra \"nirvana\" viene del budismo y representa un estado de paz y liberación del sufrimiento.",
+  "A Kurt le interesaba la filosofía budista, y eso influyó en la elección del nombre de la banda.",
+  "Kurt diseñó su propia guitarra soñada, mezclando partes de una Fender Jaguar y una Fender Mustang.",
+  "Esa guitarra se terminó fabricando de verdad y se llamó Fender Jag-Stang.",
+  "Kurt hizo el diseño original de la Jag-Stang cortando fotos de las dos guitarras y pegándolas juntas, como un collage.",
+  "La Jag-Stang venía en dos colores: azul (Sonic Blue) y rojo (Fiesta Red).",
+  "Como Kurt era zurdo, la Jag-Stang se diseñó primero como guitarra para zurdos.",
+  "Nirvana es una de las bandas más vendedoras de la historia, con más de 75 millones de discos vendidos en el mundo.",
+  "Después de Nirvana, Dave Grohl formó la banda Foo Fighters.",
+  "Krist Novoselic se dedicó después a la actividad política y social en su estado, Washington.",
+  "Nirvana solo lanzó tres álbumes de estudio en toda su carrera: \"Bleach\", \"Nevermind\" e \"In Utero\".",
+  "A pesar de haber durado solo unos pocos años en el centro de la escena, la influencia de Nirvana en el rock sigue muy presente hoy.",
+  "Nirvana ayudó a que el género \"grunge\", nacido en Seattle, se hiciera conocido en todo el mundo.",
+  "El grunge mezclaba la energía del punk con guitarras pesadas y letras que hablaban de sentirse fuera de lugar.",
+  "La banda debe parte de su sonido a influencias como Black Sabbath, Melvins y Mudhoney.",
+  "Kurt Cobain se casó con Courtney Love, cantante de la banda Hole, en 1992.",
+  "Kurt y Courtney tuvieron una hija juntos, Frances Bean Cobain, nacida en agosto de 1992.",
+  "Frances Bean Cobain, la hija de Kurt, se dedica hoy al arte visual.",
+  "\"Come As You Are\" fue el segundo single de \"Nevermind\".",
+  "\"Lithium\" es otra de las canciones más conocidas del álbum \"Nevermind\".",
+  "El video de \"Smells Like Teen Spirit\" muestra a la banda tocando en un gimnasio de escuela lleno de gente.",
+  "\"About a Girl\", del álbum \"Bleach\", muestra el lado más melódico y pop de la banda, antes de que fueran famosos.",
+  "Nirvana firmó con la discográfica DGC Records en 1991, dejando atrás el sello independiente Sub Pop.",
+  "El primer single de Nirvana, \"Love Buzz\", es en realidad una versión de una canción de la banda Shocking Blue.",
+  "En un show en Inglewood, California, en diciembre de 1993, Kurt destruyó una guitarra en el escenario y hasta usó un taladro para rasguear las cuerdas.",
+  "Nirvana ganó un American Music Award y un Brit Award a lo largo de su carrera, además de premios MTV Video Music Awards.",
+  "La banda llegó a ganar hasta 7 premios MTV Video Music Awards a lo largo de su carrera.",
+  "El productor Butch Vig fue quien grabó \"Nevermind\", en estudios de California y Wisconsin.",
+  "El nombre real y completo de Kurt Cobain era Kurt Donald Cobain.",
+  "El nombre real de Dave Grohl es David Eric Grohl.",
+  "El verdadero nombre de Krist Novoselic es Krist Anthony Novoselic.",
+  "Nirvana estuvo activa oficialmente entre 1987 y 1994, es decir, unos 7 años.",
+  "A pesar de su corta carrera, muchas revistas y críticos consideran a Nirvana una de las bandas más influyentes de la historia del rock.",
+  "Nirvana ayudó a popularizar la ropa a cuadros (flannel) como símbolo de la moda grunge.",
+  "El diseñador de moda Marc Jacobs tuvo un conflicto legal con la banda por usar una versión parecida al logo de la carita sonriente en una colección de ropa.",
+  "La revista Rolling Stone suele incluir a \"Nevermind\" entre los mejores álbumes de la historia del rock.",
+  "El álbum \"Nevermind\" pasó más de 700 semanas en la lista Billboard 200, algo que solo lograron nueve álbumes en toda la historia.",
+  "Kurt Cobain tocaba principalmente guitarras Fender, sobre todo los modelos Mustang y Jaguar.",
+  "\"Negative Creep\", de \"Bleach\", es la única canción de los álbumes de estudio de la banda que termina con un fade-out (bajando el volumen de a poco).",
+  "Según el sitio BestSellingAlbums.org, Nirvana es la banda número 44 en ventas de discos de todos los tiempos.",
+  "Antes de ser músico profesional, Kurt trabajó en varios empleos temporales, incluyendo como conserje.",
+  "Aberdeen, la ciudad natal de Kurt, es un pueblo maderero en el estado de Washington, Estados Unidos.",
+  "La primera guitarra que tuvo Kurt fue un regalo de su tía cuando era chico.",
+  "El video de \"Heart-Shaped Box\" fue dirigido por el fotógrafo y director Anton Corbijn.",
+  "Krist Novoselic y Kurt Cobain se conocieron en la secundaria, antes de formar la banda.",
+  "A Kurt le gustaba mucho el arte visual: llegó a hacer collages y dibujos que después se publicaron en un libro de sus diarios (\"Journals\"), en 2002.",
+  "Nirvana fue una de las bandas que ayudó a que el sello independiente Sub Pop se hiciera conocido a nivel mundial.",
+  "\"All Apologies\" fue una de las últimas canciones que Nirvana grabó en estudio, para el álbum \"In Utero\"."
+];
+
+function cargarNirvana() {
+  try {
+    return JSON.parse(localStorage.getItem(NIRVANA_KEY)) || { totalCorrectas: 0, desbloqueados: 0 };
+  } catch { return { totalCorrectas: 0, desbloqueados: 0 }; }
+}
+function guardarNirvana(n) { localStorage.setItem(NIRVANA_KEY, JSON.stringify(n)); }
+
+function registrarAciertoNirvana() {
+  const n = cargarNirvana();
+  n.totalCorrectas += 1;
+  let desbloqueadoNuevo = false;
+  if (n.totalCorrectas % 10 === 0 && n.desbloqueados < DATOS_NIRVANA.length) {
+    n.desbloqueados += 1;
+    desbloqueadoNuevo = true;
+  }
+  guardarNirvana(n);
+  if (desbloqueadoNuevo) {
+    mostrarDatoDesbloqueado(n.desbloqueados);
+  }
+}
+
+function mostrarDatoDesbloqueado(cantidad) {
+  document.getElementById('datoTexto').textContent = DATOS_NIRVANA[cantidad - 1];
+  document.getElementById('datoContador').textContent = `Dato ${cantidad} de ${DATOS_NIRVANA.length}`;
+  document.getElementById('modalDato').classList.add('activo');
+}
+
+function mostrarAlbum() {
+  const n = cargarNirvana();
+  const lista = document.getElementById('albumLista');
+  document.getElementById('albumContador').textContent =
+    `${n.desbloqueados} de ${DATOS_NIRVANA.length} datos descubiertos`;
+  if (n.desbloqueados === 0) {
+    lista.innerHTML = '<div class="album-vacio">Todavía no desbloqueaste ningún dato. ¡Seguí practicando, cada 10 aciertos aparece uno nuevo!</div>';
+  } else {
+    lista.innerHTML = DATOS_NIRVANA.slice(0, n.desbloqueados).map((d, i) =>
+      `<div class="album-item"><span class="num">${i + 1}.</span><span>${d}</span></div>`
+    ).join('');
+  }
+  document.getElementById('modalAlbum').classList.add('activo');
+}
+
+document.getElementById('btnVerAlbum').addEventListener('click', mostrarAlbum);
+document.getElementById('btnCerrarAlbum').addEventListener('click', () =>
+  document.getElementById('modalAlbum').classList.remove('activo'));
+document.getElementById('btnCerrarDato').addEventListener('click', () =>
+  document.getElementById('modalDato').classList.remove('activo'));
 
 // Registro silencioso de progreso (planilla propia y privada, no visible
 // para ella). Nunca cambia nada de lo que ella ve en pantalla.
@@ -259,6 +492,7 @@ function verificar() {
     feedback.textContent = elegir(frasesOk);
     feedback.className = 'feedback ok';
     registrarPracticada();
+    registrarAciertoNirvana();
     registrarEnPlanilla(true, valor);
     document.getElementById('actions').innerHTML =
       `<button class="action btn-continue" id="btnContinuar">Siguiente →</button>`;
