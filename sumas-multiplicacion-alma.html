@@ -156,7 +156,7 @@
 <footer>Hecho con cariño para Alma 🎨💛</footer>
 
 <script>
-const APP_VERSION = 'v1.2';
+const APP_VERSION = 'v1.3';
 document.getElementById('appVersion').textContent = APP_VERSION;
 
 const STORAGE_KEY = 'alma-aprender-progreso';
@@ -166,9 +166,13 @@ const STORAGE_KEY = 'alma-aprender-progreso';
 const PROGRESO_URL = 'https://script.google.com/macros/s/AKfycby5xMMGYeBOs69tdbRQuaA3sFTMWPpJCCYcYUb_MYaDYvfZD3Ry9bXUxmK_RllMM-0JqA/exec';
 const USUARIO = 'Alma';
 
-function registrarEnPlanilla(correcta) {
+function registrarEnPlanilla(correcta, respuestaDada) {
+  const operacion = `${a} ${modo === 'suma' ? '+' : '×'} ${b}`;
   const url = `${PROGRESO_URL}?action=registrarPractica&data=` +
-    encodeURIComponent(JSON.stringify({ usuario: USUARIO, modo, nivel, correcta, usoPista: pistaUsada }));
+    encodeURIComponent(JSON.stringify({
+      usuario: USUARIO, modo, nivel, correcta, usoPista: pistaUsada,
+      operacion, esperado, respuesta: respuestaDada
+    }));
   fetch(url).catch(() => {}); // silencioso: si falla, no interrumpe la práctica
 }
 
@@ -255,13 +259,13 @@ function verificar() {
     feedback.textContent = elegir(frasesOk);
     feedback.className = 'feedback ok';
     registrarPracticada();
-    registrarEnPlanilla(true);
+    registrarEnPlanilla(true, valor);
     document.getElementById('actions').innerHTML =
       `<button class="action btn-continue" id="btnContinuar">Siguiente →</button>`;
     document.getElementById('btnContinuar').addEventListener('click', generarProblema);
   } else if (!yaRespondioMal) {
     yaRespondioMal = true;
-    registrarEnPlanilla(false);
+    registrarEnPlanilla(false, valor);
     feedback.textContent = `${elegir(frasesGentiles)} ${esperado}. ¿Seguimos?`;
     feedback.className = 'feedback gentle';
     document.getElementById('actions').innerHTML =
