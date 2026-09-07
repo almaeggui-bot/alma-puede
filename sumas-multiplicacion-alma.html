@@ -234,7 +234,7 @@
 </div>
 
 <script>
-const APP_VERSION = 'v1.5';
+const APP_VERSION = 'v7';
 document.getElementById('appVersion').textContent = APP_VERSION;
 
 const STORAGE_KEY = 'alma-aprender-progreso';
@@ -346,12 +346,89 @@ const DATOS_NIRVANA = [
   "\"All Apologies\" fue una de las últimas canciones que Nirvana grabó en estudio, para el álbum \"In Utero\"."
 ];
 
+// ─── Argentina: provincias + cultura general básica ───
+const DATOS_ARGENTINA = [
+  "Argentina tiene 23 provincias más la Ciudad Autónoma de Buenos Aires (CABA), que es la capital del país.",
+  "La provincia de Buenos Aires tiene como capital a la ciudad de La Plata.",
+  "Catamarca tiene como capital a San Fernando del Valle de Catamarca.",
+  "La capital de la provincia de Chaco es la ciudad de Resistencia.",
+  "Chubut tiene como capital a la ciudad de Rawson.",
+  "Córdoba, tanto la provincia como su ciudad capital, se llaman igual: Córdoba.",
+  "Corrientes tiene como capital a la ciudad de Corrientes, igual que la provincia.",
+  "La capital de Entre Ríos es la ciudad de Paraná.",
+  "Formosa tiene como capital a la ciudad de Formosa, igual que la provincia.",
+  "La capital de Jujuy es San Salvador de Jujuy.",
+  "La Pampa tiene como capital a la ciudad de Santa Rosa.",
+  "La Rioja tiene como capital a la ciudad de La Rioja, igual que la provincia.",
+  "La capital de Mendoza es la ciudad de Mendoza, igual que la provincia.",
+  "Misiones tiene como capital a la ciudad de Posadas.",
+  "La capital de Neuquén es la ciudad de Neuquén, igual que la provincia.",
+  "Río Negro tiene como capital a la ciudad de Viedma.",
+  "La capital de Salta es la ciudad de Salta, igual que la provincia.",
+  "San Juan tiene como capital a la ciudad de San Juan, igual que la provincia.",
+  "La capital de San Luis es la ciudad de San Luis, igual que la provincia.",
+  "Santa Cruz tiene como capital a la ciudad de Río Gallegos.",
+  "La capital de Santa Fe es la ciudad de Santa Fe, igual que la provincia.",
+  "Santiago del Estero tiene como capital a la ciudad de Santiago del Estero, igual que la provincia.",
+  "La capital de Tierra del Fuego es Ushuaia, la ciudad más austral del mundo.",
+  "Tucumán tiene como capital a San Miguel de Tucumán, y es la provincia más chica de Argentina en superficie.",
+  "La Ciudad Autónoma de Buenos Aires (CABA) es la capital de todo el país, aunque no pertenece a ninguna provincia.",
+  "Argentina declaró su independencia el 9 de julio de 1816, en la ciudad de Tucumán.",
+  "La bandera argentina fue creada por Manuel Belgrano, en 1812.",
+  "El Sol que aparece en el centro de la bandera argentina se llama \"Sol de Mayo\".",
+  "El himno nacional argentino tiene letra de Vicente López y Planes, con música de Blas Parera.",
+  "Argentina limita con cinco países: Chile, Bolivia, Paraguay, Brasil y Uruguay.",
+  "El Aconcagua, en la provincia de Mendoza, es la montaña más alta de América.",
+  "Las Cataratas del Iguazú, en Misiones, son consideradas una de las siete maravillas naturales del mundo.",
+  "El general José de San Martín es considerado el Libertador de Argentina, Chile y Perú.",
+  "El tango, uno de los símbolos culturales más conocidos de Argentina, nació en Buenos Aires a fines del siglo XIX.",
+  "Argentina es el octavo país más grande del mundo por superficie."
+];
+
+// ─── Cultura general básica a nivel mundial ───
+const DATOS_MUNDIAL = [
+  "El continente americano se extiende desde Alaska, en el norte, hasta Ushuaia, en el sur, en Argentina.",
+  "Los océanos del planeta son el Pacífico, el Atlántico, el Índico, el Ártico y el Antártico.",
+  "El océano Pacífico es el más grande y más profundo de todos.",
+  "El río Nilo, en África, es considerado el río más largo del mundo, aunque algunos estudios discuten si el Amazonas podría serlo.",
+  "El desierto del Sahara, en África, es el desierto cálido más grande del mundo.",
+  "El monte Everest, en el Himalaya, es la montaña más alta del mundo sobre el nivel del mar.",
+  "La Antártida es el continente más frío y con más hielo del planeta.",
+  "A nivel del mar, el agua se congela a 0°C y hierve a 100°C.",
+  "La Tierra tarda aproximadamente 365 días en dar una vuelta completa alrededor del Sol.",
+  "La Luna es el único satélite natural de la Tierra.",
+  "El sistema solar tiene 8 planetas: Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano y Neptuno.",
+  "Júpiter es el planeta más grande de todo el sistema solar.",
+  "India es, hoy en día, el país con más población del mundo.",
+  "Rusia es el país con más superficie del mundo.",
+  "La Gran Muralla China es una de las construcciones más largas hechas por el ser humano.",
+  "Las pirámides de Egipto, en Giza, tienen miles de años de antigüedad.",
+  "La Segunda Guerra Mundial terminó en 1945.",
+  "Leonardo da Vinci pintó la Mona Lisa, una de las obras de arte más famosas del mundo.",
+  "El chino mandarín es el idioma con más hablantes nativos del mundo.",
+  "El español es uno de los idiomas más hablados del mundo, con cientos de millones de hablantes.",
+  "La ONU (Organización de las Naciones Unidas) se creó en 1945 para promover la paz entre los países.",
+  "Los Juegos Olímpicos modernos empezaron en Atenas, Grecia, en 1896.",
+  "El cuerpo humano adulto tiene 206 huesos.",
+  "El corazón humano late, en promedio, unas 100.000 veces por día.",
+  "La luz viaja a una velocidad de aproximadamente 300.000 kilómetros por segundo.",
+  "El hidrógeno es el elemento más abundante en todo el universo.",
+  "La fotosíntesis es el proceso por el cual las plantas transforman la luz solar en energía.",
+  "África es el continente con más países del mundo, con más de 50 en total.",
+  "La Torre Eiffel, en París, se construyó en 1889 para una exposición mundial.",
+  "El Coliseo Romano, en Italia, se construyó hace casi 2000 años y todavía se puede visitar."
+];
+
 function cargarNirvana() {
+  const base = {
+    totalCorrectas: 0, proximoEn: null, historial: [],
+    desbloqueados: 0, desbloqueadosArgentina: 0, desbloqueadosMundial: 0
+  };
   try {
-    return JSON.parse(localStorage.getItem(NIRVANA_KEY)) ||
-      { totalCorrectas: 0, desbloqueados: 0, proximoEn: null, historial: [] };
+    const guardado = JSON.parse(localStorage.getItem(NIRVANA_KEY));
+    return guardado ? { ...base, ...guardado } : base;
   } catch {
-    return { totalCorrectas: 0, desbloqueados: 0, proximoEn: null, historial: [] };
+    return base;
   }
 }
 function guardarNirvana(n) { localStorage.setItem(NIRVANA_KEY, JSON.stringify(n)); }
@@ -374,6 +451,27 @@ async function cargarNotasFamilia() {
   }
 }
 
+// Categorías del "recorrido": cada una avanza en orden y no se repite hasta
+// agotarse, salvo las notas de la familia, que sí pueden volver a salir.
+function categoriasDisponibles(n) {
+  const cats = [];
+  if (n.desbloqueados < DATOS_NIRVANA.length) cats.push({ tipo: 'nirvana', peso: 35 });
+  if (n.desbloqueadosArgentina < DATOS_ARGENTINA.length) cats.push({ tipo: 'argentina', peso: 25 });
+  if (n.desbloqueadosMundial < DATOS_MUNDIAL.length) cats.push({ tipo: 'mundial', peso: 25 });
+  if (NOTAS_FAMILIA.length > 0) cats.push({ tipo: 'nota', peso: 15 });
+  return cats;
+}
+
+function elegirCategoria(cats) {
+  const total = cats.reduce((s, c) => s + c.peso, 0);
+  let r = Math.random() * total;
+  for (const c of cats) {
+    if (r < c.peso) return c.tipo;
+    r -= c.peso;
+  }
+  return cats[cats.length - 1].tipo;
+}
+
 function registrarAciertoNirvana() {
   const n = cargarNirvana();
   if (n.proximoEn === null) n.proximoEn = proximoUmbral();
@@ -381,28 +479,36 @@ function registrarAciertoNirvana() {
 
   if (n.totalCorrectas >= n.proximoEn) {
     n.proximoEn = n.totalCorrectas + proximoUmbral();
-    // ~75% dato de Nirvana (en orden, mientras queden), ~25% nota de la familia
-    const hayNotas = NOTAS_FAMILIA.length > 0;
-    const tocaNota = hayNotas && Math.random() < 0.25;
 
-    if (!tocaNota && n.desbloqueados < DATOS_NIRVANA.length) {
+    const cats = categoriasDisponibles(n);
+    if (cats.length === 0) { guardarNirvana(n); return; } // no queda nada nuevo por ahora
+
+    const tipo = elegirCategoria(cats);
+    let texto, icono;
+
+    if (tipo === 'nirvana') {
+      texto = DATOS_NIRVANA[n.desbloqueados];
+      n.historial.push({ tipo: 'nirvana', indice: n.desbloqueados });
       n.desbloqueados += 1;
-      n.historial.push({ tipo: 'nirvana', indice: n.desbloqueados - 1 });
-      guardarNirvana(n);
-      mostrarDescubrimiento(DATOS_NIRVANA[n.desbloqueados - 1], '🎸');
-    } else if (hayNotas) {
-      const nota = NOTAS_FAMILIA[Math.floor(Math.random() * NOTAS_FAMILIA.length)];
-      n.historial.push({ tipo: 'nota', texto: nota });
-      guardarNirvana(n);
-      mostrarDescubrimiento(nota, '❤️');
-    } else if (n.desbloqueados < DATOS_NIRVANA.length) {
-      n.desbloqueados += 1;
-      n.historial.push({ tipo: 'nirvana', indice: n.desbloqueados - 1 });
-      guardarNirvana(n);
-      mostrarDescubrimiento(DATOS_NIRVANA[n.desbloqueados - 1], '🎸');
+      icono = '🎸';
+    } else if (tipo === 'argentina') {
+      texto = DATOS_ARGENTINA[n.desbloqueadosArgentina];
+      n.historial.push({ tipo: 'argentina', indice: n.desbloqueadosArgentina });
+      n.desbloqueadosArgentina += 1;
+      icono = '🇦🇷';
+    } else if (tipo === 'mundial') {
+      texto = DATOS_MUNDIAL[n.desbloqueadosMundial];
+      n.historial.push({ tipo: 'mundial', indice: n.desbloqueadosMundial });
+      n.desbloqueadosMundial += 1;
+      icono = '🌍';
     } else {
-      guardarNirvana(n); // ya no queda nada nuevo por ahora
+      texto = NOTAS_FAMILIA[Math.floor(Math.random() * NOTAS_FAMILIA.length)];
+      n.historial.push({ tipo: 'nota', texto });
+      icono = '❤️';
     }
+
+    guardarNirvana(n);
+    mostrarDescubrimiento(texto, icono);
   } else {
     guardarNirvana(n);
   }
@@ -415,6 +521,9 @@ function mostrarDescubrimiento(texto, icono) {
   document.getElementById('modalDato').classList.add('activo');
 }
 
+const ICONOS_CATEGORIA = { nirvana: '🎸', argentina: '🇦🇷', mundial: '🌍', nota: '❤️' };
+const ARRAYS_CATEGORIA = { nirvana: DATOS_NIRVANA, argentina: DATOS_ARGENTINA, mundial: DATOS_MUNDIAL };
+
 function mostrarAlbum() {
   const n = cargarNirvana();
   const lista = document.getElementById('albumLista');
@@ -424,8 +533,8 @@ function mostrarAlbum() {
     lista.innerHTML = '<div class="album-vacio">Todavía no descubriste nada. Seguí practicando, en algún momento va a aparecer algo nuevo.</div>';
   } else {
     lista.innerHTML = n.historial.slice().reverse().map((h) => {
-      const texto = h.tipo === 'nirvana' ? DATOS_NIRVANA[h.indice] : h.texto;
-      const icono = h.tipo === 'nirvana' ? '🎸' : '❤️';
+      const texto = h.tipo === 'nota' ? h.texto : ARRAYS_CATEGORIA[h.tipo][h.indice];
+      const icono = ICONOS_CATEGORIA[h.tipo];
       return `<div class="album-item"><span class="num">${icono}</span><span>${texto}</span></div>`;
     }).join('');
   }
