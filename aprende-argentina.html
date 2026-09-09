@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Aprende Argentina v1</title>
+<style>
+:root{
+  --bg:#0f1720;
+  --bg-soft:#16212c;
+  --panel:#1c2a36;
+  --panel-2:#22323f;
+  --line:#2c3f4d;
+  --text:#eef3f2;
+  --text-dim:#9db0b8;
+  --accent:#3fb6a8;
+  --accent-2:#e9b44c;
+  --accent-3:#d9724f;
+  --ok:#5fbf76;
+  --bad:#e2685f;
+  --radius:18px;
+  --radius-sm:10px;
+  --sp-1:6px;
+  --sp-2:12px;
+  --sp-3:20px;
+  --sp-4:32px;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --font-display: 'Fraunces', Georgia, 'Iowan Old Style', serif;
+  --font-body: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+@font-face{
+  font-family:'Fraunces';
+  src:local('Georgia');
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  background: radial-gradient(1200px 800px at 15% -10%, #1a2c34 0%, var(--bg) 55%);
+  color:var(--text);
+  font-family:var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior:none;
+}
+h1,h2,h3,h4{ font-family:var(--font-display); font-weight:600; margin:0; line-height:1.15; }
+p{ margin:0; }
+button{ font-family:inherit; }
+
+#app{
+  max-width:560px;
+  margin:0 auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+}
+
+/* ---------- Topbar ---------- */
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:var(--sp-2);
+  padding:var(--sp-3) var(--sp-3) var(--sp-2);
+}
+.topbar .back{
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  cursor:pointer;
+  flex:0 0 auto;
+}
+.topbar .back:active{ transform:scale(.94); }
+.topbar .title{ flex:1; }
+.topbar .title h2{ font-size:19px; }
+.topbar .title span{ color:var(--text-dim); font-size:13px; }
+
+.screen{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding: 0 var(--sp-3) calc(var(--sp-4) + 20px);
+  animation: fadeIn .28s ease both;
+}
+@keyframes fadeIn{ from{ opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+@media (prefers-reduced-motion: reduce){
+  .screen{ animation:none; }
+}
+
+/* ---------- Home ---------- */
+.home-hero{
+  padding: var(--sp-4) var(--sp-3) var(--sp-3);
+  text-align:center;
+}
+.home-flag{ font-size:44px; margin-bottom:var(--sp-2); }
+.home-hero h1{ font-size:34px; letter-spacing:.2px; }
+.home-hero .sub{ color:var(--text-dim); margin-top:8px; font-size:16px; }
+
+.province-card{
+  margin: var(--sp-2) var(--sp-3) var(--sp-4);
+  background: linear-gradient(150deg, var(--panel-2), var(--panel));
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+  display:flex;
+  align-items:center;
+  gap:var(--sp-3);
+  box-shadow: var(--shadow);
+}
+.province-card .swatch{
+  width:56px;height:56px;border-radius:14px;
+  background: linear-gradient(160deg, var(--accent), #2c8c81);
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;
+}
+.province-card .info{ flex:1; }
+.province-card .eyebrow{ color:var(--accent-2); font-size:12px; font-weight:700; letter-spacing:.4px; }
+.province-card h3{ font-size:20px; margin-top:2px; }
+.province-card .cap{ color:var(--text-dim); font-size:13px; margin-top:2px; }
+
+.menu-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-3);
+}
+.menu-btn{
+  border:1px solid var(--line);
+  background:var(--panel);
+  border-radius: var(--radius);
+  padding: 18px 14px;
+  text-align:left;
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  min-height:104px;
+}
+.menu-btn .ico{ font-size:26px; }
+.menu-btn .lbl{ font-weight:700; font-size:15px; }
+.menu-btn .desc{ font-size:12px; color:var(--text-dim); }
+.menu-btn:active{ transform:scale(.97); }
+.menu-btn.wide{ grid-column: 1 / -1; flex-direction:row; align-items:center; min-height:auto; padding:16px; }
+.menu-btn.wide .ico{ font-size:22px; }
+.menu-btn.accentA{ border-color: rgba(63,182,168,.5); }
+.menu-btn.accentB{ border-color: rgba(233,180,76,.45); }
+
+/* ---------- Buttons genéricos ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius: 999px;
+  padding: 14px 22px;
+  font-weight:700;
+  font-size:15px;
+  border:1px solid transparent;
+  cursor:pointer;
+}
+.btn-primary{ background:var(--accent); color:#062421; }
+.btn-primary:active{ transform:scale(.97); }
+.btn-ghost{ background:transparent; border-color:var(--line); color:var(--text); }
+.btn-ghost:active{ transform:scale(.97); }
+.btn-block{ width:100%; }
+.btn:disabled{ opacity:.4; pointer-events:none; }
+
+/* ---------- Mapa ---------- */
+.map-wrap{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-2);
+  margin: var(--sp-2) 0 var(--sp-3);
+}
+svg.arg-map{ width:100%; height:auto; display:block; }
+.prov-shape{
+  fill:#2a3c47;
+  stroke:#0f1720;
+  stroke-width:2;
+  cursor:pointer;
+  transition: fill .15s ease;
+}
+.prov-shape:hover{ fill:#334956; }
+.prov-shape.target{ fill:#2f5c56; }
+.prov-shape.correct{ fill: var(--ok); }
+.prov-shape.wrong{ fill: var(--bad); }
+.prov-shape.dim{ fill:#202e38; cursor:default; }
+.prov-shape.highlight{ fill: var(--accent-2); }
+.caba-dot{ fill:var(--accent-2); stroke:#0f1720; stroke-width:1.5; }
+.caba-dot.dim{ fill:#3a4a55; }
+
+.map-hint{
+  text-align:center;
+  color:var(--text-dim);
+  font-size:13px;
+  min-height:18px;
+  margin-top:4px;
+}
+.map-feedback{
+  text-align:center;
+  font-weight:700;
+  font-size:16px;
+  min-height:24px;
+  margin-top:2px;
+}
+.map-feedback.ok{ color:var(--ok); }
+.map-feedback.bad{ color:var(--bad); }
+
+/* ---------- Cards / Conocer ---------- */
+.info-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-4) var(--sp-3);
+  min-height: 300px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:var(--sp-2);
+  text-align:center;
+}
+.info-card .step{ color:var(--accent-2); font-size:12px; font-weight:700; }
+.info-card .icon{ font-size:40px; }
+.info-card h3{ font-size:22px; }
+.info-card .body{ color:var(--text-dim); font-size:15.5px; line-height:1.5; }
+.info-card .body strong{ color:var(--text); }
+.card-nav{
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top: var(--sp-3);
+}
+.dots{ display:flex; gap:6px; }
+.dot{ width:7px; height:7px; border-radius:50%; background:var(--line); }
+.dot.active{ background:var(--accent); width:18px; border-radius:4px; }
+.round-btn{
+  width:48px;height:48px;border-radius:50%;
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  color:var(--text);
+  font-size:18px;
+  cursor:pointer;
+}
+.round-btn:disabled{ opacity:.3; }
+
+/* ---------- Preguntas / Quiz ---------- */
+.quiz-progress{
+  height:6px; background:var(--line); border-radius:4px; overflow:hidden; margin: 4px 0 var(--sp-3);
+}
+.quiz-progress > div{ height:100%; background:var(--accent); border-radius:4px; transition: width .3s ease; }
+
+.q-media{
+  width:100%;
+  border-radius: var(--radius-sm);
+  overflow:hidden;
+  margin-bottom:var(--sp-2);
+  background:var(--panel-2);
+  border:1px solid var(--line);
+  min-height:150px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.q-media img{ width:100%; display:block; }
+.q-media .icon-fallback{ font-size:52px; }
+.q-media .cred{
+  position:absolute; bottom:0; left:0; right:0;
+  background:rgba(0,0,0,.55);
+  color:#fff; font-size:10px; padding:4px 8px;
+}
+.q-media.small{ min-height:110px; }
+
+.q-card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  padding: var(--sp-3);
+}
+.q-type{ color:var(--accent); font-size:11.5px; font-weight:700; letter-spacing:.3px; text-transform:uppercase; }
+.q-enunciado{ font-size:19px; margin-top:6px; font-family:var(--font-display); font-weight:600; }
+
+.opciones{ display:flex; flex-direction:column; gap:10px; margin-top:var(--sp-3); }
+.opcion{
+  text-align:left;
+  padding:14px 16px;
+  border-radius: 14px;
+  border:1px solid var(--line);
+  background:var(--panel-2);
+  color:var(--text);
+  font-size:15px;
+  cursor:pointer;
+}
+.opcion:active{ transform:scale(.985); }
+.opcion.correct{ background:rgba(95,191,118,.18); border-color:var(--ok); }
+.opcion.wrong{ background:rgba(226,104,95,.18); border-color:var(--bad); }
+.opcion:disabled{ pointer-events:none; }
+
+.feedback-panel{
+  margin-top:var(--sp-3);
+  padding:var(--sp-3);
+  border-radius: var(--radius-sm);
+  background:var(--panel-2);
+  border:1px solid var(--line);
+}
+.feedback-panel .fb-title{ font-weight:700; font-size:16px; margin-bottom:4px; }
+.feedback-panel.ok .fb-title{ color:var(--ok); }
+.feedback-panel.bad .fb-title{ color:var(--bad); }
+.feedback-panel .fb-text{ color:var(--text-dim); font-size:14px; line-height:1.5; }
+.feedback-panel .fb-source{ color:var(--text-dim); font-size:11.5px; margin-top:8px; opacity:.7; }
+
+.quiz-footer{ margin-top:var(--sp-3); }
+
+/* ---------- Niveles ---------- */
+.levels-list{ display:flex; flex-direction:column; gap:10px; }
+.level-row{
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px;
+  border-radius: var(--radius-sm);
+  border:1px solid var(--line);
+  background:var(--panel);
+  cursor:pointer;
+}
+.level-row.locked{ opacity:.45; cursor:default; }
+.level-row .num{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--panel-2);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700; flex:0 0 auto;
+}
+.level-row.done .num{ background:var(--ok); color:#062421; }
+.level-row .meta{ flex:1; }
+.level-row .meta .lname{ font-weight:700; font-size:15px; }
+.level-row .meta .ldesc{ font-size:12.5px; color:var(--text-dim); }
+.level-row .chev{ color:var(--text-dim); }
+
+/* ---------- Progreso ---------- */
+.stat-grid{
+  display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+  margin-bottom: var(--sp-3);
+}
+.stat-box{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding:16px;
+  text-align:center;
+}
+.stat-box .val{ font-size:26px; font-weight:700; font-family:var(--font-display); }
+.stat-box .lbl{ color:var(--text-dim); font-size:12px; margin-top:2px; }
+
+.progress-bar-outer{
+  height:10px; background:var(--line); border-radius:6px; overflow:hidden;
+}
+.progress-bar-inner{ height:100%; background:linear-gradient(90deg, var(--accent), var(--accent-2)); }
+
+.section-title{ font-size:14px; color:var(--text-dim); margin: var(--sp-3) 0 var(--sp-2); font-weight:700; text-transform:uppercase; letter-spacing:.3px; }
+
+.review-item{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:12px 14px; border-radius:12px; background:var(--panel); border:1px solid var(--line);
+  margin-bottom:8px; font-size:13.5px;
+}
+.review-item .tag{ font-size:11px; color:var(--accent-2); font-weight:700; }
+.empty-note{ color:var(--text-dim); font-size:13.5px; padding:14px; text-align:center; }
+
+/* ---------- Resultado final de nivel/desafío ---------- */
+.result-wrap{ text-align:center; padding: var(--sp-4) var(--sp-2); }
+.result-wrap .big{ font-size:52px; }
+.result-wrap h2{ margin-top:var(--sp-2); font-size:24px; }
+.result-wrap .score{ font-size:17px; color:var(--text-dim); margin-top:8px; }
+
+.wonders-list{ display:flex; flex-direction:column; gap:14px; }
+.wonder-card{
+  background:var(--panel); border:1px solid var(--line); border-radius: var(--radius); overflow:hidden;
+}
+.wonder-media{ min-height:130px; background:var(--panel-2); display:flex; align-items:center; justify-content:center; position:relative; }
+.wonder-media .icon-fallback{ font-size:44px; }
+.wonder-body{ padding: var(--sp-2) var(--sp-3) var(--sp-3); }
+.wonder-body h4{ font-size:17px; }
+.wonder-body .loc{ color:var(--accent-2); font-size:12px; font-weight:700; margin-top:2px; }
+.wonder-body .desc{ font-size:14px; color:var(--text-dim); margin-top:8px; line-height:1.5; }
+.wonder-body .why{ font-size:13px; margin-top:10px; padding-top:10px; border-top:1px solid var(--line); }
+.wonder-body .why b{ color:var(--accent); }
+
+footer.appfoot{ text-align:center; color:var(--text-dim); font-size:11px; padding: 14px 0 6px; opacity:.6; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+'use strict';
+/* =========================================================================
+   APRENDE ARGENTINA — motor de juego educativo (geografía/cultura)
+   Arquitectura: CONTENIDO (objeto DATA) separado del MOTOR (render/estado).
+   Fuente de contenido de Río Negro: rio-negro.md (respetada tal cual).
+   Sin backend. Progreso guardado en localStorage.
+   ========================================================================= */
+
+const APP_VERSION = 'v1';
+const STORAGE_KEY = 'aprendeArgentina_' + APP_VERSION;
+
+/* -------------------------------------------------------------------------
+   1) CONTENIDO — lista completa de 23 provincias + CABA.
+   Solo Río Negro está "implementada" (implementado:true) con datos
+   completos según rio-negro.md. El resto existen para que el mapa esté
+   completo y funcione la orientación/distractores, y para que sumar una
+   provincia nueva en el futuro sea agregar un objeto acá, no reescribir
+   el motor.
+   ------------------------------------------------------------------------- */
+
+const PROVINCIAS = [
+  { id:'jujuy', nombre:'Jujuy', implementado:false },
+  { id:'salta', nombre:'Salta', implementado:false },
+  { id:'formosa', nombre:'Formosa', implementado:false },
+  { id:'chaco', nombre:'Chaco', implementado:false },
+  { id:'misiones', nombre:'Misiones', implementado:false },
+  { id:'catamarca', nombre:'Catamarca', implementado:false },
+  { id:'tucuman', nombre:'Tucumán', implementado:false },
+  { id:'santiago', nombre:'Santiago del Estero', implementado:false },
+  { id:'santafe', nombre:'Santa Fe', implementado:false },
+  { id:'corrientes', nombre:'Corrientes', implementado:false },
+  { id:'larioja', nombre:'La Rioja', implementado:false },
+  { id:'cordoba', nombre:'Córdoba', implementado:false },
+  { id:'entrerios', nombre:'Entre Ríos', implementado:false },
+  { id:'sanjuan', nombre:'San Juan', implementado:false },
+  { id:'sanluis', nombre:'San Luis', implementado:false },
+  { id:'mendoza', nombre:'Mendoza', implementado:false },
+  { id:'buenosaires', nombre:'Buenos Aires', implementado:false },
+  { id:'caba', nombre:'Ciudad Autónoma de Buenos Aires', implementado:false },
+  { id:'lapampa', nombre:'La Pampa', implementado:false },
+  { id:'neuquen', nombre:'Neuquén', implementado:false },
+
+  { id:'rionegro', nombre:'Río Negro', implementado:true,
+    capital:'Viedma',
+    ciudadMasPoblada:'San Carlos de Bariloche',
+    region:'Patagonia',
+    ubicacionCardinal:'Centro-norte de la Patagonia, en el sur de Argentina',
+    superficie:'203.013 km²',
+    poblacion:'750.768 habitantes (Censo 2022)',
+    limites:{
+      norte:{ provincia:'La Pampa', detalle:'marcado por el río Colorado' },
+      este:{ provincia:'Buenos Aires', detalle:'y el Océano Atlántico (Golfo San Matías)' },
+      sur:{ provincia:'Chubut', detalle:'a lo largo del paralelo 42°S' },
+      oeste:{ provincia:'Neuquén', detalle:'gran parte marcada por el río Limay' }
+    },
+    paisLimitrofe:'Chile',
+    descripcionBreve:'Provincia patagónica que va de la Cordillera de los Andes al Océano Atlántico: lagos y bosques en el oeste (Bariloche), estepa árida en el centro y costa con acantilados y lobos marinos en el este.',
+    visual:{
+      paisaje:'Lago Nahuel Huapi con la Cordillera de fondo (oeste) y acantilados sobre el Golfo San Matías (este)',
+      animal:'Lobo marino de un pelo (Punta Bermeja)',
+      flora:'Arrayán, de corteza color canela, en los bosques andino-patagónicos',
+      arquitectura:'Centro Cívico de Bariloche, piedra y madera de ciprés y alerce ("Estilo Bariloche")',
+      comida:'Chocolate artesanal de Bariloche'
+    },
+    fuentesGeo:['Gobierno de Río Negro (rionegro.gov.ar/geografia)', 'Argentina.gob.ar/rionegro'],
+    maravillas:[
+      {
+        id:'nahuelhuapi',
+        nombre:'Parque Nacional Nahuel Huapi',
+        ubicacion:'Noroeste de Río Negro (compartido con Neuquén), cerca de San Carlos de Bariloche',
+        descripcion:'Primer parque nacional de Argentina y de América Latina. Nació de tierras donadas por el Perito Francisco P. Moreno en 1903.',
+        porQueMemorable:'Es "el primero" — un ancla histórica fácil de recordar, con el lago más famoso de la Patagonia.',
+        fuente:'argentina.gob.ar/interior/ambiente/parquesnacionales/nahuelhuapi',
+        icono:'🏔️',
+        imagen:{ estado:'pendiente' }
+      },
+      {
+        id:'puntabermeja',
+        nombre:'Reserva Natural Punta Bermeja ("La Lobería")',
+        ubicacion:'Costa atlántica, entre 45 y 63 km de Viedma, departamento Adolfo Alsina',
+        descripcion:'Una de las colonias de lobos marinos de un pelo más grandes de Sudamérica (más de 4.000 ejemplares). Reserva creada en 1971.',
+        porQueMemorable:'Miles de lobos marinos sobre acantilados: una imagen muy fuerte, única en la costa norpatagónica.',
+        fuente:'rionegro.gov.ar/articulo/6302',
+        icono:'🦭',
+        imagen:{ estado:'pendiente' }
+      },
+      {
+        id:'centrocivico',
+        nombre:'Centro Cívico de San Carlos de Bariloche',
+        ubicacion:'San Carlos de Bariloche, frente al lago Nahuel Huapi',
+        descripcion:'Inaugurado en 1940, con piedra, ciprés y alerce locales. Dio origen al "Estilo Bariloche".',
+        porQueMemorable:'El edificio público más fotografiado de la Patagonia; resume la identidad arquitectónica de la región.',
+        fuente:'argentina.gob.ar/capital-humano/cultura/monumentos/centro-civico-e-intendencia-de-parques-nacionales',
+        icono:'🏛️',
+        imagen:{
+          estado:'usable',
+          url:'https://commons.wikimedia.org/wiki/Special:FilePath/Centro%20C%C3%ADvico%20de%20Bariloche%20de%20noche.jpg',
+          autor:'Alpertron',
+          licencia:'CC BY-SA',
+          fuenteSitio:'Wikimedia Commons',
+          alt:'Centro Cívico de Bariloche de noche'
+        }
+      },
+      {
+        id:'comarca',
+        nombre:'Comarca Viedma – Carmen de Patagones',
+        ubicacion:'Desembocadura del río Negro',
+        descripcion:'Fundadas como una sola unidad el 22 de abril de 1779. Es el asentamiento europeo más antiguo de la Patagonia. Un puente ferroviario de acero (1927–1931) y lanchas cruzan el río entre ambas.',
+        porQueMemorable:'Una capital de provincia "pegada" a otra provincia distinta, separadas solo por un río.',
+        fuente:'es.wikipedia.org/wiki/Viedma-Carmen_de_Patagones',
+        icono:'🌉',
+        imagen:{ estado:'pendiente' }
+      },
+      {
+        id:'chimpay',
+        nombre:'Santuario del Beato Ceferino Namuncurá, Chimpay',
+        ubicacion:'Chimpay, Valle Medio',
+        descripcion:'Pueblo natal (1886) de Ceferino Namuncurá, hijo del cacique mapuche Manuel Namuncurá, beatificado en 2007. Cada agosto llegan miles de peregrinos.',
+        porQueMemorable:'Conecta geografía, historia mapuche y un personaje real con devoción en toda la Patagonia.',
+        fuente:'rionegro.gov.ar/articulo/42873',
+        icono:'🕊️',
+        imagen:{ estado:'pendiente' }
+      }
+    ],
+    arteCultura:[
+      { id:'ceferino', cadena:'Chimpay → Ceferino Namuncurá → cacique mapuche Manuel Namuncurá → cultura mapuche → peregrinación anual', fuente:'rionegro.gov.ar, donboscosur.org' },
+      { id:'bustillo', cadena:'Bariloche → Centro Cívico → arquitecto Ernesto de Estrada / Alejandro Bustillo → "Estilo Bariloche"', fuente:'argentina.gob.ar, es.wikipedia.org' },
+      { id:'chocolate', cadena:'Bariloche → chocolate artesanal → inmigrante italiano Aldo Fenoglio (Turín, 1947) → Museo del Chocolate → Fiesta Nacional del Chocolate', fuente:'rionegro.gov.ar/articulo/29262, agroempresario.com' }
+    ],
+    curiosidades:[
+      { id:'capital', texto:'Viedma estuvo a punto de ser la Capital Federal de Argentina. En 1987, bajo el presidente Raúl Alfonsín, se sancionó una ley para trasladar la capital del país a Viedma/Carmen de Patagones. Nunca se concretó.', fuente:'todo-argentina.net, patagonia-argentina.com' },
+      { id:'cereza', texto:'Chimpay es la Capital Provincial de la Cereza (Ley 4135/06) y también la "Capital Provincial del Peregrino".', fuente:'chimpay.gob.ar' },
+      { id:'chocolate', texto:'El chocolate de Bariloche no usa cacao de la zona: se importa de Brasil, Colombia, Ecuador y Perú. La tradición llegó con inmigrantes europeos.', fuente:'diarioandino.com.ar, rionegro.gov.ar' },
+      { id:'fundacion', texto:'Viedma y Carmen de Patagones nacieron el mismo día: el 22 de abril de 1779, como un único fuerte.', fuente:'es.wikipedia.org/wiki/Viedma-Carmen_de_Patagones' },
+      { id:'lobos', texto:'Punta Bermeja alberga una de las colonias de lobos marinos más grandes de Sudamérica: más de 4.000 ejemplares permanentes sobre 14 km de costa.', fuente:'rionegro.gov.ar, ri.conicet.gov.ar' }
+    ]
+  },
+
+  { id:'chubut', nombre:'Chubut', implementado:false },
+  { id:'santacruz', nombre:'Santa Cruz', implementado:false },
+  { id:'tierradelfuego', nombre:'Tierra del Fuego', implementado:false }
+];
+
+function getProvincia(id){ return PROVINCIAS.find(p => p.id === id); }
+function provinciasImplementadas(){ return PROVINCIAS.filter(p => p.implementado); }
+
+/* -------------------------------------------------------------------------
+   2) MAPA — layout esquemático (grilla) de las 24 jurisdicciones.
+   No son bordes geográficos reales, sino posiciones relativas correctas
+   (norte/sur/este/oeste, vecinos) armadas a mano sobre una grilla de
+   6 columnas x 12 filas. Pensado para poder reemplazarse más adelante
+   por paths geográficos reales sin tocar el motor: cada entrada solo
+   necesita id + rect (o path) + label.
+   ------------------------------------------------------------------------- */
+const CELL_W = 70, CELL_H = 50, GAP = 6, MARGIN = 10;
+function cell(col,row,colspan,rowspan){
+  colspan = colspan||1; rowspan = rowspan||1;
+  return {
+    x: MARGIN + (col-1)*CELL_W,
+    y: MARGIN + (row-1)*CELL_H,
+    w: CELL_W*colspan - GAP,
+    h: CELL_H*rowspan - GAP
+  };
+}
+const MAP_LAYOUT = {
+  jujuy:       cell(2,1),
+  salta:       cell(3,1,1,2),
+  catamarca:   cell(1,2,1,2),
+  tucuman:     cell(2,2),
+  chaco:       cell(4,2),
+  formosa:     cell(5,2),
+  misiones:    cell(6,2,1,3),
+  santiago:    cell(3,3),
+  santafe:     cell(4,3,1,2),
+  corrientes:  cell(5,3),
+  larioja:     cell(1,4),
+  cordoba:     cell(3,4),
+  entrerios:   cell(5,4),
+  sanjuan:     cell(1,5),
+  sanluis:     cell(2,5),
+  buenosaires: cell(4,5,2,2),
+  mendoza:     cell(1,6),
+  lapampa:     cell(2,6),
+  neuquen:     cell(1,7),
+  rionegro:    cell(1,8,2,1),
+  chubut:      cell(1,9,2,1),
+  santacruz:   cell(1,10,2,2),
+  tierradelfuego: cell(1,12)
+};
+const CABA_DOT = (function(){
+  const ba = MAP_LAYOUT.buenosaires;
+  return { cx: ba.x + ba.w - 16, cy: ba.y + 16, r:7 };
+})();
+const MAP_VIEWBOX = '0 0 440 620';
+
+function svgProvinceShapes(opts){
+  opts = opts || {};
+  const highlightId = opts.highlightId;
+  const targetId = opts.targetId;
+  const dimOthers = !!opts.dimOthers;
+  const interactive = opts.interactive !== false;
+  let out = '';
+  PROVINCIAS.forEach(p => {
+    const r = MAP_LAYOUT[p.id];
+    if(!r) return;
+    let cls = 'prov-shape';
+    if(dimOthers && p.id !== highlightId) cls += ' dim';
+    if(p.id === highlightId) cls += ' highlight';
+    if(p.id === targetId && !highlightId) cls += ' target';
+    const dataAttr = interactive ? ` data-prov="${p.id}"` : '';
+    out += `<rect class="${cls}" x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" rx="10"${dataAttr}></rect>`;
+  });
+  const cabaCls = 'caba-dot' + (dimOthers && highlightId !== 'caba' ? ' dim' : '');
+  out += `<circle class="${cabaCls}" cx="${CABA_DOT.cx}" cy="${CABA_DOT.cy}" r="${CABA_DOT.r}"${interactive ? ' data-prov="caba"' : ''}></circle>`;
+  return out;
+}
+
+function renderMapSVG(opts){
+  return `<svg class="arg-map" viewBox="${MAP_VIEWBOX}" xmlns="http://www.w3.org/2000/svg">${svgProvinceShapes(opts)}</svg>`;
+}
+
+/* -------------------------------------------------------------------------
+   3) BANCO DE PREGUNTAS — Río Negro.
+   Cada pregunta: {id, tipo, nivel, enunciado, opciones[], respuesta,
+   explicacion, fuente, media?}. tipo ∈ ubicacion | capital | orientacion |
+   reconocimiento | asociacion_visual | imagen | cultura | curiosidad.
+   ------------------------------------------------------------------------- */
+const TODAS_PROVINCIAS_NOMBRES = PROVINCIAS.filter(p=>p.id!=='caba').map(p=>p.nombre);
+
+function opcionesConDistractores(correcta, poolExcluyendo, cantidad){
+  cantidad = cantidad || 4;
+  const pool = poolExcluyendo.filter(n => n !== correcta);
+  const shuffled = pool.slice().sort(()=>Math.random()-.5).slice(0, cantidad-1);
+  const opciones = shuffled.concat([correcta]);
+  return opciones.sort(()=>Math.random()-.5);
+}
+
+const PREGUNTAS_RIONEGRO = [
+  // NIVEL 1 — Ubicación
+  { id:'rn-u1', tipo:'ubicacion', nivel:1,
+    enunciado:'¿En qué región de Argentina está ubicada Río Negro?',
+    opciones:['Patagonia','Cuyo','Noroeste (NOA)','Litoral'], respuesta:'Patagonia',
+    explicacion:'Río Negro está en el centro-norte de la región patagónica, en el sur del país.', fuente:'Argentina.gob.ar' },
+  { id:'rn-u2', tipo:'ubicacion', nivel:1,
+    enunciado:'¿Río Negro está en el norte o en el sur de Argentina?',
+    opciones:['En el sur (Patagonia)','En el norte (NOA)','En el centro (Cuyo)','En el litoral mesopotámico'], respuesta:'En el sur (Patagonia)',
+    explicacion:'Es una de las provincias patagónicas, al sur del país.', fuente:'Gobierno de Río Negro' },
+  { id:'rn-u3', tipo:'ubicacion', nivel:1,
+    enunciado:'¿Qué océano baña la costa este de Río Negro?',
+    opciones:['Océano Atlántico','Océano Pacífico','Mar Mediterráneo','Mar Caribe'], respuesta:'Océano Atlántico',
+    explicacion:'La costa este da al Golfo San Matías, parte del Mar Argentino / Océano Atlántico.', fuente:'Gobierno de Río Negro' },
+  { id:'rn-u4', tipo:'ubicacion', nivel:1,
+    enunciado:'¿Con qué país limita Río Negro al oeste?',
+    opciones:['Chile','Brasil','Uruguay','Paraguay'], respuesta:'Chile',
+    explicacion:'El límite oeste lo marca la Cordillera de los Andes, frontera con Chile.', fuente:'Gobierno de Río Negro' },
+
+  // NIVEL 2 — Capital
+  { id:'rn-c1', tipo:'capital', nivel:2,
+    enunciado:'¿Cuál es la capital de Río Negro?',
+    opciones:['Viedma','San Carlos de Bariloche','Neuquén','Santa Rosa'], respuesta:'Viedma',
+    explicacion:'Viedma es la capital provincial, ubicada sobre el río Negro cerca de su desembocadura.', fuente:'Argentina.gob.ar' },
+  { id:'rn-c2', tipo:'capital', nivel:2,
+    enunciado:'Viedma es la capital de...',
+    opciones:['Río Negro','Buenos Aires','Chubut','La Pampa'], respuesta:'Río Negro',
+    explicacion:'Viedma es la capital de la provincia de Río Negro.', fuente:'Argentina.gob.ar' },
+  { id:'rn-c3', tipo:'capital', nivel:2,
+    enunciado:'¿Cuál es la ciudad MÁS POBLADA de Río Negro, aunque no sea la capital?',
+    opciones:['San Carlos de Bariloche','Viedma','General Roca','Choele Choel'], respuesta:'San Carlos de Bariloche',
+    explicacion:'Bariloche es la ciudad más poblada de la provincia; Viedma es la capital administrativa.', fuente:'Todo-Argentina.net' },
+  { id:'rn-c4', tipo:'capital', nivel:2,
+    enunciado:'Viedma está sobre la orilla de un río, poco antes de que desemboque en el mar. ¿Cuál?',
+    opciones:['Río Negro','Río Colorado','Río Limay','Río Paraná'], respuesta:'Río Negro',
+    explicacion:'Viedma está sobre el margen sur del río Negro, a unos 30 km de la costa atlántica.', fuente:'Gobierno de Río Negro' },
+  { id:'rn-c5', tipo:'capital', nivel:2,
+    enunciado:'¿Qué ciudad bonaerense está justo enfrente de Viedma, cruzando el río?',
+    opciones:['Carmen de Patagones','Bahía Blanca','Mar del Plata','La Plata'], respuesta:'Carmen de Patagones',
+    explicacion:'Viedma y Carmen de Patagones forman una comarca separada solo por el río Negro.', fuente:'Wikipedia — Viedma-Carmen de Patagones' },
+
+  // NIVEL 3 — Límites / Orientación
+  { id:'rn-o1', tipo:'orientacion', nivel:3,
+    enunciado:'¿Qué provincia está al NORTE de Río Negro?',
+    opciones:['La Pampa','Buenos Aires','Chubut','Neuquén'], respuesta:'La Pampa',
+    explicacion:'Al norte limita con La Pampa, separadas por el río Colorado.', fuente:'Gobierno de Río Negro' },
+  { id:'rn-o2', tipo:'orientacion', nivel:3,
+    enunciado:'¿Qué provincia está al ESTE de Río Negro (además del mar)?',
+    opciones:['Buenos Aires','La Pampa','Chubut','Neuquén'], respuesta:'Buenos Aires',
+    explicacion:'Al este limita con Buenos Aires y con el Océano Atlántico (Golfo San Matías).', fuente:'Gobierno de Río Negro' },
+  { id:'rn-o3', tipo:'orientacion', nivel:3,
+    enunciado:'¿Qué provincia está al SUR de Río Negro?',
+    opciones:['Chubut','La Pampa','Buenos Aires','Neuquén'], respuesta:'Chubut',
+    explicacion:'Al sur limita con Chubut, a lo largo del paralelo 42°S.', fuente:'Gobierno de Río Negro' },
+  { id:'rn-o4', tipo:'orientacion', nivel:3,
+    enunciado:'¿Qué provincia está al OESTE de Río Negro?',
+    opciones:['Neuquén','Chubut','La Pampa','Buenos Aires'], respuesta:'Neuquén',
+    explicacion:'Al oeste limita con Neuquén; gran parte de ese límite lo forma el río Limay.', fuente:'Gobierno de Río Negro' },
+  { id:'rn-o5', tipo:'orientacion', nivel:3,
+    enunciado:'El límite norte de Río Negro está marcado por un río. ¿Cuál?',
+    opciones:['Río Colorado','Río Negro','Río Limay','Río Paraná'], respuesta:'Río Colorado',
+    explicacion:'El río Colorado separa a Río Negro de La Pampa.', fuente:'Gobierno de Río Negro' },
+  { id:'rn-o6', tipo:'orientacion', nivel:3,
+    enunciado:'Gran parte del límite oeste con Neuquén está marcado por un río. ¿Cuál?',
+    opciones:['Río Limay','Río Colorado','Río Negro','Río Chubut'], respuesta:'Río Limay',
+    explicacion:'El río Limay forma buena parte de la frontera entre Río Negro y Neuquén.', fuente:'Gobierno de Río Negro' },
+
+  // NIVEL 4 — Reconocimiento visual (posición en el mapa)
+  { id:'rn-r1', tipo:'reconocimiento', nivel:4, mapaHighlight:'rionegro',
+    enunciado:'Esta provincia está resaltada en el mapa. ¿Cuál es?',
+    opciones:['Río Negro','Chubut','Neuquén','La Pampa'], respuesta:'Río Negro',
+    explicacion:'Río Negro está justo al norte de Chubut y al sur de Neuquén y La Pampa.', fuente:'Mapa esquemático de la app' },
+  { id:'rn-r2', tipo:'reconocimiento', nivel:4, mapaHighlight:'rionegro',
+    enunciado:'Volvé a mirar el mapa: ¿qué provincia es la resaltada?',
+    opciones:['Río Negro','Santa Cruz','Buenos Aires','La Pampa'], respuesta:'Río Negro',
+    explicacion:'Es Río Negro: al sur de La Pampa y Buenos Aires, al norte de Chubut.', fuente:'Mapa esquemático de la app' },
+  { id:'rn-r3', tipo:'reconocimiento', nivel:4, mapaHighlight:'rionegro',
+    enunciado:'Una vez más: ¿qué provincia ves resaltada?',
+    opciones:['Río Negro','Chubut','Mendoza','Buenos Aires'], respuesta:'Río Negro',
+    explicacion:'Río Negro, en el centro-norte de la Patagonia.', fuente:'Mapa esquemático de la app' },
+
+  // NIVEL 5 — Maravillas / lugares destacados
+  { id:'rn-m1', tipo:'imagen', nivel:5, media:'centrocivico',
+    enunciado:'¿A qué provincia pertenece este lugar?',
+    opciones:['Río Negro','Neuquén','Chubut','Mendoza'], respuesta:'Río Negro',
+    explicacion:'Es el Centro Cívico de San Carlos de Bariloche, en Río Negro, inaugurado en 1940.', fuente:'argentina.gob.ar' },
+  { id:'rn-m2', tipo:'asociacion_visual', nivel:5, media:'puntabermeja',
+    enunciado:'¿En qué provincia está esta reserva de lobos marinos?',
+    opciones:['Río Negro','Chubut','Santa Cruz','Buenos Aires'], respuesta:'Río Negro',
+    explicacion:'Es Punta Bermeja ("La Lobería"), en la costa atlántica de Río Negro.', fuente:'rionegro.gov.ar' },
+  { id:'rn-m3', tipo:'cultura', nivel:5,
+    enunciado:'¿Cómo se llama el parque nacional más antiguo de Argentina, ubicado en Río Negro y Neuquén?',
+    opciones:['Parque Nacional Nahuel Huapi','Parque Nacional Los Arrayanes','Parque Nacional Iguazú','Parque Nacional Talampaya'], respuesta:'Parque Nacional Nahuel Huapi',
+    explicacion:'Creado en 1934 sobre tierras donadas por el Perito Moreno en 1903.', fuente:'argentina.gob.ar' },
+  { id:'rn-m4', tipo:'cultura', nivel:5,
+    enunciado:'¿En qué localidad de Río Negro nació el Beato Ceferino Namuncurá?',
+    opciones:['Chimpay','Viedma','San Carlos de Bariloche','General Roca'], respuesta:'Chimpay',
+    explicacion:'Nació en Chimpay, Valle Medio, en 1886.', fuente:'donboscosur.org' },
+  { id:'rn-m5', tipo:'asociacion_visual', nivel:5,
+    enunciado:'¿Qué edificio de Bariloche dio origen al "Estilo Bariloche"?',
+    opciones:['El Centro Cívico','La Catedral','El Museo del Chocolate','El aeropuerto'], respuesta:'El Centro Cívico',
+    explicacion:'Su piedra, madera y techos empinados definieron un estilo arquitectónico propio.', fuente:'argentina.gob.ar' },
+  { id:'rn-m6', tipo:'cultura', nivel:5,
+    enunciado:'Dos ciudades separadas por el río Negro, fundadas el mismo día de 1779. Una es Viedma, ¿cuál es la otra?',
+    opciones:['Carmen de Patagones','Bahía Blanca','San Antonio Oeste','Choele Choel'], respuesta:'Carmen de Patagones',
+    explicacion:'Ambas nacieron el 22 de abril de 1779 como un único fuerte.', fuente:'Wikipedia — Viedma-Carmen de Patagones' },
+
+  // NIVEL 6 — Cultura
+  { id:'rn-cu1', tipo:'cultura', nivel:6,
+    enunciado:'Ceferino Namuncurá era hijo de un cacique de qué pueblo originario?',
+    opciones:['Mapuche','Guaraní','Qom','Diaguita'], respuesta:'Mapuche',
+    explicacion:'Su padre, Manuel Namuncurá, era un cacique mapuche.', fuente:'donboscosur.org' },
+  { id:'rn-cu2', tipo:'cultura', nivel:6,
+    enunciado:'¿En qué año fue beatificado Ceferino Namuncurá?',
+    opciones:['2007','1957','1972','1990'], respuesta:'2007',
+    explicacion:'Fue beatificado el 11 de noviembre de 2007, en Chimpay, por Benedicto XVI.', fuente:'donboscosur.org' },
+  { id:'rn-cu3', tipo:'cultura', nivel:6,
+    enunciado:'El chocolate artesanal de Bariloche llegó de la mano de inmigrantes. ¿De qué país llegó Aldo Fenoglio, uno de sus pioneros?',
+    opciones:['Italia','Suiza','Alemania','Francia'], respuesta:'Italia',
+    explicacion:'Fenoglio llegó de Turín, Italia, en 1947.', fuente:'rionegro.gov.ar/articulo/29262' },
+  { id:'rn-cu4', tipo:'cultura', nivel:6,
+    enunciado:'¿Bariloche produce su propio cacao?',
+    opciones:['No: lo importa de Brasil, Colombia, Ecuador y Perú','Sí, tiene plantaciones propias','Solo una pequeña parte','No, lo produce Chimpay'], respuesta:'No: lo importa de Brasil, Colombia, Ecuador y Perú',
+    explicacion:'La tradición chocolatera llegó con inmigrantes; el cacao siempre se importó.', fuente:'diarioandino.com.ar' },
+
+  // NIVEL 7 — Curiosidades
+  { id:'rn-q1', tipo:'curiosidad', nivel:7,
+    enunciado:'¿Sabías que...? ¿Qué ciudad estuvo a punto de convertirse en la Capital Federal de Argentina en 1987?',
+    opciones:['Viedma','San Carlos de Bariloche','Neuquén','Santa Rosa'], respuesta:'Viedma',
+    explicacion:'Una ley de 1987, bajo el presidente Alfonsín, proponía trasladar la capital a Viedma. Nunca se concretó.', fuente:'todo-argentina.net' },
+  { id:'rn-q2', tipo:'curiosidad', nivel:7,
+    enunciado:'¿Sabías que...? Chimpay es la Capital Provincial de...',
+    opciones:['la Cereza','la Manzana','el Chocolate','la Lana'], respuesta:'la Cereza',
+    explicacion:'Declarada por Ley 4135/06, por su producción de cerezas.', fuente:'chimpay.gob.ar' },
+  { id:'rn-q3', tipo:'curiosidad', nivel:7,
+    enunciado:'¿Sabías que...? ¿Aproximadamente cuántos lobos marinos viven en la colonia de Punta Bermeja?',
+    opciones:['Más de 4.000','Unos 100','Unos 500','Más de 50.000'], respuesta:'Más de 4.000',
+    explicacion:'Es una de las colonias de lobos marinos más grandes de Sudamérica.', fuente:'rionegro.gov.ar' },
+  { id:'rn-q4', tipo:'curiosidad', nivel:7,
+    enunciado:'¿Sabías que...? Viedma y Carmen de Patagones fueron fundadas...',
+    opciones:['el mismo día','con 100 años de diferencia','por gobiernos rivales','recién en el siglo XX'], respuesta:'el mismo día',
+    explicacion:'El 22 de abril de 1779, como una sola unidad.', fuente:'Wikipedia — Viedma-Carmen de Patagones' },
+  { id:'rn-q5', tipo:'curiosidad', nivel:7,
+    enunciado:'¿Sabías que...? Bariloche fabrica aproximadamente esta cantidad de chocolate por año:',
+    opciones:['1.000 toneladas','10 toneladas','100.000 toneladas','50 toneladas'], respuesta:'1.000 toneladas',
+    explicacion:'Todo con cacao importado, sin producción local.', fuente:'diarioandino.com.ar' }
+];
+
+const MEDIA_LIBRARY = {
+  centrocivico: getProvincia('rionegro').maravillas.find(m=>m.id==='centrocivico').imagen,
+  puntabermeja: { estado:'pendiente', icono:'🦭' }
+};
+
+function preguntasPorNivel(nivel){
+  return PREGUNTAS_RIONEGRO.filter(q => q.nivel === nivel);
+}
+function preguntasPorTipo(tipo){
+  return PREGUNTAS_RIONEGRO.filter(q => q.tipo === tipo);
+}
+
+const NIVELES = [
+  { n:1, nombre:'Ubicación', desc:'¿Dónde está Río Negro?', icono:'📍' },
+  { n:2, nombre:'Capital', desc:'Viedma y sus datos', icono:'🏙️' },
+  { n:3, nombre:'Límites', desc:'Provincias vecinas', icono:'🧭' },
+  { n:4, nombre:'Reconocimiento', desc:'Identificar en el mapa', icono:'🗺️' },
+  { n:5, nombre:'Lugares destacados', desc:'Las 5 maravillas', icono:'⭐' },
+  { n:6, nombre:'Cultura', desc:'Personas e historias', icono:'🎭' },
+  { n:7, nombre:'Curiosidades', desc:'Datos sorprendentes', icono:'💡' },
+  { n:8, nombre:'Desafío mixto', desc:'Un poco de todo', icono:'🎲' }
+];
+
+/* -------------------------------------------------------------------------
+   4) ALMACENAMIENTO — progreso en localStorage con repetición espaciada.
+   ------------------------------------------------------------------------- */
+const REPASO_INTERVALOS_DIAS = [0, 1, 3, 7, 16];
+
+function estadoInicial(){
+  return {
+    version: APP_VERSION,
+    nivelDesbloqueado: 1,
+    nivelesCompletados: [],
+    estadisticas: { totalRespondidas:0, aciertos:0, errores:0, rachaActual:0, rachaMaxima:0 },
+    preguntas: {},
+    desafioMejorPuntaje: 0,
+    ubicarCompletado: false,
+    conocerVisto: false
+  };
+}
+
+function cargarEstado(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return estadoInicial();
+    const parsed = JSON.parse(raw);
+    if(parsed.version !== APP_VERSION) return estadoInicial();
+    return Object.assign(estadoInicial(), parsed);
+  }catch(e){
+    return estadoInicial();
+  }
+}
+function guardarEstado(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(STATE)); }
+  catch(e){ /* almacenamiento no disponible: seguimos sin persistir */ }
+}
+
+function registrarRespuesta(preguntaId, correcta){
+  const st = STATE.estadisticas;
+  st.totalRespondidas++;
+  if(correcta){ st.aciertos++; st.rachaActual++; if(st.rachaActual>st.rachaMaxima) st.rachaMaxima = st.rachaActual; }
+  else { st.errores++; st.rachaActual = 0; }
+
+  const p = STATE.preguntas[preguntaId] || { vistas:0, etapa:0, proximaFecha:0 };
+  p.vistas++;
+  if(correcta){ p.etapa = Math.min(p.etapa+1, REPASO_INTERVALOS_DIAS.length-1); }
+  else { p.etapa = 0; }
+  p.proximaFecha = Date.now() + REPASO_INTERVALOS_DIAS[p.etapa]*86400000;
+  p.ultimaCorrecta = correcta;
+  STATE.preguntas[preguntaId] = p;
+  guardarEstado();
+}
+
+function preguntasQueVencieron(){
+  const now = Date.now();
+  return Object.keys(STATE.preguntas).filter(id => {
+    const p = STATE.preguntas[id];
+    return p.vistas > 0 && p.proximaFecha <= now;
+  });
+}
+
+function completarNivel(n){
+  if(!STATE.nivelesCompletados.includes(n)) STATE.nivelesCompletados.push(n);
+  if(STATE.nivelDesbloqueado <= n && n < NIVELES.length) STATE.nivelDesbloqueado = n+1;
+  guardarEstado();
+}
+
+let STATE = cargarEstado();
+
+/* -------------------------------------------------------------------------
+   5) MOTOR — estado de navegación + render.
+   ------------------------------------------------------------------------- */
+const NAV = { screen:'home' };
+const root = document.getElementById('app');
+
+function goto(screen, params){
+  NAV.screen = screen;
+  NAV.params = params || {};
+  render();
+  window.scrollTo(0,0);
+}
+
+function render(){
+  const screens = {
+    home: renderHome,
+    ubicar: renderUbicar,
+    conocer: renderConocer,
+    niveles: renderNiveles,
+    quiz: renderQuiz,
+    desafio: renderDesafioIntro,
+    progreso: renderProgreso,
+    resultado: renderResultado
+  };
+  root.innerHTML = (screens[NAV.screen] || renderHome)();
+  bindScreenEvents();
+}
+
+function topbar(title, sub, backTo){
+  return `<div class="topbar">
+    ${backTo ? `<button class="back" data-nav="${backTo}">←</button>` : `<span style="width:40px"></span>`}
+    <div class="title"><h2>${title}</h2>${sub ? `<span>${sub}</span>` : ''}</div>
+  </div>`;
+}
+
+/* ---------- Pantalla: HOME ---------- */
+function renderHome(){
+  const rn = getProvincia('rionegro');
+  return `
+  <div class="screen" style="padding-top:0;">
+    <div class="home-hero">
+      <div class="home-flag">🇦🇷</div>
+      <h1>APRENDE ARGENTINA</h1>
+      <div class="sub">Descubre las provincias jugando</div>
+    </div>
+    <div class="province-card">
+      <div class="swatch">🧭</div>
+      <div class="info">
+        <div class="eyebrow">PROVINCIA 1</div>
+        <h3>${rn.nombre}</h3>
+        <div class="cap">Capital: ${rn.capital} · ${rn.region}</div>
+      </div>
+    </div>
+    <div class="menu-grid">
+      <button class="menu-btn accentA" data-nav="ubicar"><div class="ico">📍</div><div class="lbl">Ubicar</div><div class="desc">Encontrala en el mapa</div></button>
+      <button class="menu-btn accentA" data-nav="conocer"><div class="ico">🗺️</div><div class="lbl">Conocer</div><div class="desc">Tarjetas rápidas</div></button>
+      <button class="menu-btn accentB" data-nav="niveles"><div class="ico">🧠</div><div class="lbl">Jugar</div><div class="desc">Niveles progresivos</div></button>
+      <button class="menu-btn accentB" data-nav="desafio"><div class="ico">🏆</div><div class="lbl">Desafío</div><div class="desc">Preguntas mixtas</div></button>
+      <button class="menu-btn wide" data-nav="progreso"><div class="ico">📊</div><div class="lbl" style="flex:1">Mi progreso</div><div class="desc">Ver estadísticas</div></button>
+    </div>
+    <footer class="appfoot">Aprende Argentina · ${APP_VERSION} · contenido verificado con fuentes oficiales</footer>
+  </div>`;
+}
+
+/* ---------- Pantalla: UBICAR ---------- */
+const UBICAR_STATE = { intentos:0, resuelto:false };
+function renderUbicar(){
+  UBICAR_STATE.intentos = UBICAR_STATE.intentos || 0;
+  const rn = getProvincia('rionegro');
+  let hint = '';
+  if(UBICAR_STATE.intentos === 1) hint = 'Pista: está en la Patagonia.';
+  else if(UBICAR_STATE.intentos >= 2) hint = 'Pista: limita al norte con La Pampa.';
+
+  return `
+  ${topbar('Ubicar', 'Tocá Río Negro en el mapa', 'home')}
+  <div class="screen">
+    <p style="color:var(--text-dim); font-size:14.5px;">Tocá la provincia de <strong style="color:var(--text)">Río Negro</strong> en el mapa de Argentina.</p>
+    <div class="map-wrap">
+      ${renderMapSVG({ targetId:'rionegro' })}
+    </div>
+    <div class="map-feedback" id="ubicar-feedback"></div>
+    <div class="map-hint" id="ubicar-hint">${hint}</div>
+    <div id="ubicar-info"></div>
+  </div>`;
+}
+
+function handleUbicarTap(provId){
+  const feedbackEl = document.getElementById('ubicar-feedback');
+  const hintEl = document.getElementById('ubicar-hint');
+  const infoEl = document.getElementById('ubicar-info');
+  const shapes = document.querySelectorAll('.prov-shape, .caba-dot');
+
+  if(provId === 'rionegro'){
+    UBICAR_STATE.resuelto = true;
+    STATE.ubicarCompletado = true; guardarEstado();
+    shapes.forEach(s => { if(s.dataset.prov === 'rionegro') s.classList.add('correct'); });
+    feedbackEl.textContent = '✔ ¡Correcto!';
+    feedbackEl.className = 'map-feedback ok';
+    hintEl.textContent = '';
+    const rn = getProvincia('rionegro');
+    infoEl.innerHTML = `
+      <div class="info-card" style="margin-top:16px; min-height:auto; text-align:left;">
+        <div class="icon">🏔️</div>
+        <h3>${rn.nombre}</h3>
+        <div class="body">${rn.ubicacionCardinal}. Capital: <strong>${rn.capital}</strong>.<br>${rn.descripcionBreve}</div>
+      </div>
+      <button class="btn btn-primary btn-block" style="margin-top:16px;" data-nav="conocer">Seguir conociendo →</button>
+    `;
+  } else {
+    UBICAR_STATE.intentos++;
+    const el = Array.from(shapes).find(s => s.dataset.prov === provId);
+    if(el){ el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'), 500); }
+    feedbackEl.textContent = '❌ Todavía no.';
+    feedbackEl.className = 'map-feedback bad';
+    if(UBICAR_STATE.intentos === 1) hintEl.textContent = 'Pista: está en la Patagonia.';
+    else if(UBICAR_STATE.intentos >= 2) hintEl.textContent = 'Pista: limita al norte con La Pampa.';
+  }
+}
+
+/* ---------- Pantalla: CONOCER ---------- */
+const CONOCER_STATE = { idx:0 };
+function conocerCards(){
+  const rn = getProvincia('rionegro');
+  return [
+    { step:'1 · ¿DÓNDE ESTÁ?', icon:'📍', title:'Ubicación', body:`${rn.ubicacionCardinal}. Limita al oeste con <strong>${rn.paisLimitrofe}</strong>.` },
+    { step:'2 · CAPITAL', icon:'🏙️', title:rn.capital, body:`Es la capital de Río Negro. La ciudad más poblada es <strong>${rn.ciudadMasPoblada}</strong>.` },
+    { step:'3 · TAMAÑO', icon:'📐', title:'Superficie y población', body:`${rn.superficie} de superficie.<br>${rn.poblacion}.` },
+    { step:'4 · LÍMITES', icon:'🧭', title:'Provincias vecinas', body:`Norte: <strong>${rn.limites.norte.provincia}</strong> · Este: <strong>${rn.limites.este.provincia}</strong><br>Sur: <strong>${rn.limites.sur.provincia}</strong> · Oeste: <strong>${rn.limites.oeste.provincia}</strong>` },
+    { step:'5 · PAISAJES', icon:'🏔️', title:'Dos paisajes, una provincia', body:`${rn.visual.paisaje}.` },
+    { step:'6 · LUGARES DESTACADOS', icon:'⭐', title:`${rn.maravillas.length} maravillas`, body: rn.maravillas.map(m=>m.nombre).join(' · ') },
+    { step:'7 · CULTURA', icon:'🎭', title:'Historias que conectan', body: rn.arteCultura.map(a=>a.cadena.split(' → ')[0]+' → '+a.cadena.split(' → ')[1]).join('<br>') },
+    { step:'8 · CURIOSIDADES', icon:'💡', title:'¿Sabías que...?', body: rn.curiosidades[0].texto }
+  ];
+}
+function renderConocer(){
+  const cards = conocerCards();
+  const i = CONOCER_STATE.idx;
+  const c = cards[i];
+  const dots = cards.map((_,idx)=>`<span class="dot ${idx===i?'active':''}"></span>`).join('');
+  return `
+  ${topbar('Conocer', `Río Negro · ${i+1} de ${cards.length}`, 'home')}
+  <div class="screen">
+    <div class="info-card">
+      <div class="step">${c.step}</div>
+      <div class="icon">${c.icon}</div>
+      <h3>${c.title}</h3>
+      <div class="body">${c.body}</div>
+    </div>
+    <div class="card-nav">
+      <button class="round-btn" id="conocer-prev" ${i===0?'disabled':''}>←</button>
+      <div class="dots">${dots}</div>
+      <button class="round-btn" id="conocer-next" ${i===cards.length-1?'disabled':''}>→</button>
+    </div>
+    ${i===cards.length-1 ? `<button class="btn btn-primary btn-block" style="margin-top:20px;" data-nav="niveles">Ir a jugar →</button>` : ''}
+  </div>`;
+}
+
+/* ---------- Pantalla: NIVELES ---------- */
+function renderNiveles(){
+  const rows = NIVELES.map(nv => {
+    const locked = nv.n > STATE.nivelDesbloqueado;
+    const done = STATE.nivelesCompletados.includes(nv.n);
+    return `<div class="level-row ${locked?'locked':''} ${done?'done':''}" ${locked?'':`data-start-nivel="${nv.n}"`}>
+      <div class="num">${done ? '✓' : nv.n}</div>
+      <div class="meta">
+        <div class="lname">${nv.icono} Nivel ${nv.n} · ${nv.nombre}</div>
+        <div class="ldesc">${nv.desc}</div>
+      </div>
+      <div class="chev">${locked ? '🔒' : '›'}</div>
+    </div>`;
+  }).join('');
+  return `
+  ${topbar('Jugar', 'Elegí un nivel', 'home')}
+  <div class="screen">
+    <div class="levels-list">${rows}</div>
+  </div>`;
+}
+
+/* ---------- Motor de QUIZ (usado por niveles y desafío) ---------- */
+const QUIZ_STATE = { preguntas:[], idx:0, aciertos:0, modo:'nivel', nivel:null, respondida:false };
+
+function armarPreguntasNivel(nivel){
+  const pool = preguntasPorNivel(nivel);
+  // priorizar preguntas vencidas para repaso dentro del mismo tipo/nivel
+  const vencidas = preguntasQueVencieron();
+  const conPrioridad = pool.slice().sort((a,b)=>{
+    const av = vencidas.includes(a.id) ? 0 : 1;
+    const bv = vencidas.includes(b.id) ? 0 : 1;
+    return av - bv;
+  });
+  return conPrioridad.slice(0, Math.min(5, conPrioridad.length));
+}
+function armarPreguntasMixtas(cantidad){
+  const shuffled = PREGUNTAS_RIONEGRO.slice().sort(()=>Math.random()-.5);
+  return shuffled.slice(0, cantidad || 10);
+}
+
+function iniciarQuizNivel(nivel){
+  QUIZ_STATE.preguntas = armarPreguntasNivel(nivel).map(prepararPregunta);
+  QUIZ_STATE.idx = 0; QUIZ_STATE.aciertos = 0; QUIZ_STATE.modo = 'nivel'; QUIZ_STATE.nivel = nivel; QUIZ_STATE.respondida=false;
+  goto('quiz');
+}
+function iniciarDesafio(){
+  QUIZ_STATE.preguntas = armarPreguntasMixtas(10).map(prepararPregunta);
+  QUIZ_STATE.idx = 0; QUIZ_STATE.aciertos = 0; QUIZ_STATE.modo = 'desafio'; QUIZ_STATE.nivel = null; QUIZ_STATE.respondida=false;
+  goto('quiz');
+}
+function prepararPregunta(q){
+  return Object.assign({}, q, { opcionesMostradas: q.opciones.slice().sort(()=>Math.random()-.5) });
+}
+
+function renderDesafioIntro(){
+  return `
+  ${topbar('Desafío', 'Preguntas mixtas de Río Negro', 'home')}
+  <div class="screen">
+    <div class="info-card">
+      <div class="icon">🏆</div>
+      <h3>Desafío mixto</h3>
+      <div class="body">10 preguntas al azar, de todos los temas.<br>Mejor puntaje guardado: <strong>${STATE.desafioMejorPuntaje}/10</strong></div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:20px;" id="start-desafio">Empezar</button>
+  </div>`;
+}
+
+function renderQuiz(){
+  const q = QUIZ_STATE.preguntas[QUIZ_STATE.idx];
+  if(!q){
+    return `${topbar('Jugar','','home')}<div class="screen"><div class="empty-note">Todavía no hay suficientes preguntas en este nivel. Volvé pronto.</div><button class="btn btn-ghost btn-block" data-nav="niveles" style="margin-top:12px;">Volver a niveles</button></div>`;
+  }
+  const total = QUIZ_STATE.preguntas.length;
+  const pct = Math.round(((QUIZ_STATE.idx)/total)*100);
+
+  let mediaHtml = '';
+  if(q.tipo === 'reconocimiento' && q.mapaHighlight){
+    mediaHtml = `<div class="map-wrap" style="margin-bottom:16px;">${renderMapSVG({highlightId:q.mapaHighlight, dimOthers:true, interactive:false})}</div>`;
+  } else if(q.media){
+    const m = MEDIA_LIBRARY[q.media];
+    if(m && m.estado === 'usable'){
+      mediaHtml = `<div class="q-media"><img src="${m.url}" alt="${m.alt||''}" loading="lazy">
+        <div class="cred">Foto: ${m.autor} / ${m.fuenteSitio} (${m.licencia})</div></div>`;
+    } else {
+      mediaHtml = `<div class="q-media small"><div class="icon-fallback">${(m&&m.icono)||'🖼️'}</div></div>`;
+    }
+  }
+
+  const opciones = q.opcionesMostradas.map(op => {
+    return `<button class="opcion" data-opcion="${encodeURIComponent(op)}">${op}</button>`;
+  }).join('');
+
+  return `
+  ${topbar(QUIZ_STATE.modo==='desafio'?'Desafío':'Nivel '+QUIZ_STATE.nivel, `Pregunta ${QUIZ_STATE.idx+1} de ${total}`, QUIZ_STATE.modo==='desafio'?'desafio':'niveles')}
+  <div class="screen">
+    <div class="quiz-progress"><div style="width:${pct}%"></div></div>
+    ${mediaHtml}
+    <div class="q-card">
+      <div class="q-type">${etiquetaTipo(q.tipo)}</div>
+      <div class="q-enunciado">${q.enunciado}</div>
+      <div class="opciones">${opciones}</div>
+    </div>
+    <div id="quiz-feedback"></div>
+  </div>`;
+}
+
+function etiquetaTipo(tipo){
+  const map = { ubicacion:'Ubicación', capital:'Capital', orientacion:'Orientación', reconocimiento:'Reconocimiento', asociacion_visual:'Asociación visual', imagen:'Imagen', cultura:'Cultura', curiosidad:'Curiosidad' };
+  return map[tipo] || tipo;
+}
+
+function handleOpcionClick(btn){
+  if(QUIZ_STATE.respondida) return;
+  QUIZ_STATE.respondida = true;
+  const q = QUIZ_STATE.preguntas[QUIZ_STATE.idx];
+  const elegido = decodeURIComponent(btn.dataset.opcion);
+  const correcta = elegido === q.respuesta;
+  if(correcta) QUIZ_STATE.aciertos++;
+  registrarRespuesta(q.id, correcta);
+
+  document.querySelectorAll('.opcion').forEach(b=>{
+    b.disabled = true;
+    const val = decodeURIComponent(b.dataset.opcion);
+    if(val === q.respuesta) b.classList.add('correct');
+    else if(b === btn) b.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('quiz-feedback');
+  fb.innerHTML = `
+    <div class="feedback-panel ${correcta?'ok':'bad'}">
+      <div class="fb-title">${correcta ? '✔ ¡Muy bien!' : '❌ Casi.'}</div>
+      <div class="fb-text">${q.explicacion}</div>
+      <div class="fb-source">Fuente: ${q.fuente}</div>
+    </div>
+    <button class="btn btn-primary btn-block" style="margin-top:14px;" id="quiz-next">${QUIZ_STATE.idx+1 < QUIZ_STATE.preguntas.length ? 'Siguiente' : 'Ver resultado'}</button>
+  `;
+}
+
+function avanzarQuiz(){
+  QUIZ_STATE.idx++;
+  QUIZ_STATE.respondida = false;
+  if(QUIZ_STATE.idx >= QUIZ_STATE.preguntas.length){
+    if(QUIZ_STATE.modo === 'nivel'){
+      const total = QUIZ_STATE.preguntas.length;
+      const pctOk = total ? QUIZ_STATE.aciertos/total : 0;
+      if(pctOk >= 0.6) completarNivel(QUIZ_STATE.nivel);
+    } else {
+      if(QUIZ_STATE.aciertos > STATE.desafioMejorPuntaje){ STATE.desafioMejorPuntaje = QUIZ_STATE.aciertos; guardarEstado(); }
+    }
+    goto('resultado');
+  } else {
+    render();
+  }
+}
+
+function renderResultado(){
+  const total = QUIZ_STATE.preguntas.length;
+  const aciertos = QUIZ_STATE.aciertos;
+  const pct = total ? Math.round((aciertos/total)*100) : 0;
+  const paso = pct >= 60;
+  const emoji = pct >= 80 ? '🏆' : pct >= 60 ? '🎉' : '💪';
+  const titulo = QUIZ_STATE.modo === 'desafio' ? 'Desafío completo' : `Nivel ${QUIZ_STATE.nivel} ${paso ? 'superado' : 'para repasar'}`;
+  return `
+  ${topbar('Resultado','','home')}
+  <div class="screen">
+    <div class="result-wrap">
+      <div class="big">${emoji}</div>
+      <h2>${titulo}</h2>
+      <div class="score">${aciertos} de ${total} correctas (${pct}%)</div>
+      ${QUIZ_STATE.modo==='nivel' && !paso ? `<p style="color:var(--text-dim); font-size:13.5px; margin-top:10px;">Necesitás 60% para avanzar de nivel. ¡Probá de nuevo!</p>` : ''}
+    </div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-primary btn-block" id="resultado-repetir">Repetir</button>
+      <button class="btn btn-ghost btn-block" data-nav="${QUIZ_STATE.modo==='desafio'?'home':'niveles'}">${QUIZ_STATE.modo==='desafio'?'Volver al inicio':'Volver a niveles'}</button>
+    </div>
+  </div>`;
+}
+
+/* ---------- Pantalla: PROGRESO ---------- */
+function renderProgreso(){
+  const st = STATE.estadisticas;
+  const pctAciertos = st.totalRespondidas ? Math.round((st.aciertos/st.totalRespondidas)*100) : 0;
+  const totalPreguntas = PREGUNTAS_RIONEGRO.length;
+  const vistas = Object.keys(STATE.preguntas).length;
+  const progresoRN = totalPreguntas ? Math.round((vistas/totalPreguntas)*100) : 0;
+  const vencidas = preguntasQueVencieron();
+
+  const aprendidos = Object.keys(STATE.preguntas).filter(id => {
+    const p = STATE.preguntas[id]; return p.ultimaCorrecta && p.etapa >= 2;
+  });
+
+  const repasoHtml = vencidas.length
+    ? vencidas.slice(0,6).map(id => {
+        const q = PREGUNTAS_RIONEGRO.find(x=>x.id===id);
+        if(!q) return '';
+        return `<div class="review-item"><span>${q.enunciado}</span><span class="tag">${etiquetaTipo(q.tipo)}</span></div>`;
+      }).join('')
+    : `<div class="empty-note">No tenés contenidos pendientes de repaso por ahora 🎉</div>`;
+
+  return `
+  ${topbar('Mi progreso','', 'home')}
+  <div class="screen">
+    <div class="stat-grid">
+      <div class="stat-box"><div class="val">${STATE.nivelDesbloqueado <= NIVELES.length ? STATE.nivelDesbloqueado : NIVELES.length}</div><div class="lbl">⭐ Nivel actual</div></div>
+      <div class="stat-box"><div class="val">${pctAciertos}%</div><div class="lbl">🎯 Aciertos totales</div></div>
+      <div class="stat-box"><div class="val">${st.rachaMaxima}</div><div class="lbl">🔥 Mejor racha</div></div>
+      <div class="stat-box"><div class="val">${aprendidos.length}</div><div class="lbl">📚 Bien aprendidos</div></div>
+    </div>
+
+    <div class="section-title">Progreso de Río Negro</div>
+    <div class="progress-bar-outer"><div class="progress-bar-inner" style="width:${progresoRN}%"></div></div>
+    <p style="color:var(--text-dim); font-size:12.5px; margin-top:6px;">${vistas} de ${totalPreguntas} contenidos explorados</p>
+
+    <div class="section-title">🧠 Para repasar</div>
+    ${repasoHtml}
+  </div>`;
+}
+
+/* -------------------------------------------------------------------------
+   6) EVENTOS
+   ------------------------------------------------------------------------- */
+function bindScreenEvents(){
+  root.querySelectorAll('[data-nav]').forEach(el => {
+    el.addEventListener('click', () => goto(el.dataset.nav));
+  });
+
+  if(NAV.screen === 'ubicar'){
+    root.querySelectorAll('.prov-shape, .caba-dot').forEach(el=>{
+      el.addEventListener('click', ()=> handleUbicarTap(el.dataset.prov));
+    });
+  }
+
+  if(NAV.screen === 'conocer'){
+    const cards = conocerCards();
+    const prev = document.getElementById('conocer-prev');
+    const next = document.getElementById('conocer-next');
+    if(prev) prev.addEventListener('click', ()=>{ if(CONOCER_STATE.idx>0){ CONOCER_STATE.idx--; render(); }});
+    if(next) next.addEventListener('click', ()=>{ if(CONOCER_STATE.idx<cards.length-1){ CONOCER_STATE.idx++; render(); }});
+  }
+
+  if(NAV.screen === 'niveles'){
+    root.querySelectorAll('[data-start-nivel]').forEach(el=>{
+      el.addEventListener('click', ()=> iniciarQuizNivel(parseInt(el.dataset.startNivel,10)));
+    });
+  }
+
+  if(NAV.screen === 'desafio'){
+    const b = document.getElementById('start-desafio');
+    if(b) b.addEventListener('click', iniciarDesafio);
+  }
+
+  if(NAV.screen === 'quiz'){
+    root.querySelectorAll('.opcion').forEach(el=>{
+      el.addEventListener('click', ()=> handleOpcionClick(el));
+    });
+    root.addEventListener('click', function delegated(e){
+      if(e.target && e.target.id === 'quiz-next'){
+        avanzarQuiz();
+      }
+    });
+  }
+
+  if(NAV.screen === 'resultado'){
+    const rep = document.getElementById('resultado-repetir');
+    if(rep) rep.addEventListener('click', ()=>{
+      if(QUIZ_STATE.modo === 'nivel') iniciarQuizNivel(QUIZ_STATE.nivel);
+      else iniciarDesafio();
+    });
+  }
+}
+
+/* -------------------------------------------------------------------------
+   7) INICIO
+   ------------------------------------------------------------------------- */
+render();
+</script>
+</body>
+</html>
