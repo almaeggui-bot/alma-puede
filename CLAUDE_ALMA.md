@@ -220,3 +220,83 @@ Cada HTML del repo lleva en su cabecera un comentario identificador:
   Deploy: alma-puede.vercel.app
   Este archivo NO pertenece a VAO Sistemas.
 -->
+---
+
+## REGLA 19 — SI OTRA IA SUGIERE CAMBIOS GRANDES
+
+Cuando otra IA (Claude, ChatGPT, Gemini, etc.) sugiera cambios,
+evaluarlos contra estas reglas. Si la sugerencia viola una Regla de Oro,
+NO se aplica. Se anota y se pregunta.
+
+Ejemplos concretos ya detectados:
+
+- **"Olvidate de la app actual y rehacela"** → NO. Viola la Regla Más
+  Importante. Lo que funciona se preserva.
+- **"Meté todo en un archivo HTML gigante"** → NO. Viola Regla 13
+  (modularizar).
+- **"Creá una v2 / v3 del archivo"** → NO. Viola Regla 1 (APP_VERSION +1
+  entero, mismo archivo).
+- **"Reemplazá la app por algo más moderno"** → NO. Viola la Regla Más
+  Importante.
+
+Si dudás, preguntar antes de aplicar. Nunca improvisar cambios grandes.
+
+---
+
+## REGLA 20 — LOGROS Y DATOS SIEMPRE CON FUENTE Y FECHA
+
+Todo logro, dato curioso, historia o píldora de conocimiento que la app
+le muestre a Alma tiene que tener, visible:
+
+1. **Fuente** (nombre concreto: INDEC, Argentina.gob.ar, UNESCO,
+   Chubut Patagonia Gob.ar, etc.).
+2. **Año de verificación** (2026, por ejemplo).
+
+La fuente y la fecha NO van en letra chica escondida. Son parte del
+contenido. Tan visibles como el dato mismo.
+
+Esto cumple la Regla 14 (sentido crítico) y la Regla 16 (contenido
+verificado contra fuente).
+
+Si un dato no tiene fuente verificable, no entra. Si un dato envejece
+(ej: "en 2026 había 2.110 ballenas"), se mantiene la fecha original y se
+aclara "último dato disponible al verificar". La información también
+envejece — eso también se enseña.
+
+---
+
+## REGLA 21 — FORMATO DE "COSAS QUE NO TE CUENTAN"
+
+Las historias tipo Pulitzer viven en un archivo aparte (`historias.md`
+en la raíz del repo) y se muestran dentro de la app como píldoras.
+
+Formato fijo de cada historia:
+
+- **Título:** corto, atrapante.
+- **Dato:** 2 o 3 frases máximo. Claras, sin vueltas.
+- **Fuente:** nombre concreto + año.
+- **Moraleja:** una frase corta que invite a preguntar, no a memorizar.
+
+Ejemplo de moraleja buena: *"Siempre preguntate: ¿quién lo dice? ¿Por qué
+lo dice? ¿Y quién gana con que yo le crea?"*
+
+Ejemplo de moraleja mala: *"Hay que ser bueno con los demás."*
+
+Tono: "mirá lo que encontré", no "aprendé esto".
+No hay notas. No hay tareas. Hay descubrimientos.
+
+---
+
+## REGLA 22 — COSAS QUE NO SE HACEN POR MODA
+
+Si una sugerencia suena "moderna", "más profesional" o "más copada",
+pero implica romper algo que ya funciona, se descarta.
+
+Ejemplos ya detectados:
+- "Usá React / frameworks" → NO. El proyecto es HTML/CSS/JS puro.
+- "Armá un backend" → NO. Todo va en localStorage.
+- "Migrá a otra plataforma" → NO. Vercel + GitHub, ya está.
+- "Tirá el código actual y rehacelo" → NO. Preservar primero.
+
+Si de verdad hace falta un cambio grande, se anota como Tarea Pendiente
+con justificación. Se ejecuta solo con pedido explícito.
