@@ -364,3 +364,120 @@ los mensajes ya quedaron guardados igual.
 ═══════════════════════════════════════════════════
 FIN DE TAREAS PENDIENTES — 12/09/2026
 ═══════════════════════════════════════════════════
+## TAREA 2 — ROMPECABEZAS 4x4 CON LOGROS QUE ENSEÑAN
+
+**Estado:** Pendiente de ejecución. Idea registrada.
+
+### QUÉ
+
+Un rompecabezas de 16 piezas (grilla 4x4) con el mapa de Argentina.
+Alma arrastra cada pieza a su lugar. Cuando completa el puzzle, aparece
+un logro: dato curioso de una línea, con fuente y fecha visibles.
+
+### POR QUÉ
+
+- Alternativa más simple y divertida que el quiz actual.
+- Refuerzo visual: el mapa se va armando pieza por pieza.
+- Cada logro es una "píldora de sentido crítico": dato + fuente + fecha.
+
+### CÓMO SE INTEGRA
+
+- **NO reemplaza la app actual.** Se suma.
+- Vive en una página aparte (`rompecabezas.html`) por Regla 13.
+- Los logros se guardan en localStorage (álbum de figuritas).
+- Los datos vienen de un archivo aparte (o dentro del HTML).
+- Cada logro sigue la Regla 20 (fuente + fecha visible).
+
+### QUÉ NO HACER
+
+- NO tirar la app actual para hacer esto.
+- NO meter el rompecabezas dentro de `aprende-argentina.html`.
+- NO crear una "v2" del archivo.
+
+### PENDIENTE
+
+- Definir imagen base del rompecabezas.
+- Definir 9 o 16 piezas (arrancar con 9 quizás).
+- Definir los datos que desbloquea cada logro.
+- Armar la sección "Álbum de logros".
+- Decidir si convive con el quiz actual o lo complementa.
+
+───────────────────────────────────────────────────
+
+## TAREA 3 — "COSAS QUE NO TE CUENTAN" (historias)
+
+**Estado:** Pendiente de ejecución. Primera historia en verificación.
+
+### QUÉ
+
+Sección aparte dentro de la app donde Alma puede leer historias breves
+que le enseñan a dudar de la información. Cada historia es una píldora
+de sentido crítico.
+
+### FORMATO
+
+Ver `CLAUDE_ALMA.md` → Regla 21.
+
+### PRIMERA HISTORIA (a verificar)
+
+Título: **El premio que nació de una trampa**
+Tema: Joseph Pulitzer y la prensa amarilla.
+Estado: **PENDIENTE DE VERIFICACIÓN.** La versión que circula en otras
+IA ("se hizo rico inventando noticias falsas para que lo recordaran
+como héroe") está simplificada. Hay que verificarla contra fuentes
+serias antes de que entre a la app.
+
+### POR QUÉ
+
+- Es la historia que inició la idea de las píldoras de sentido crítico.
+- Es un ejemplo perfecto de "quién lo dice, por qué lo dice, quién gana".
+- Es vigente: hoy el periodismo sigue teniendo los mismos problemas que
+  Pulitzer ayudó a crear.
+
+### QUÉ NO HACER
+
+- NO meter la historia sin verificar.
+- NO meter moralejas vacías ("hay que ser bueno").
+- NO explicar la Doctrina Campillay dentro de la app. Es contexto legal
+  interno, no contenido para Alma.
+
+### PENDIENTE
+
+- Verificar la historia de Pulitzer contra fuentes serias.
+- Escribir la versión matizada (sin titular golpeador).
+- Escribir 2 o 3 historias más (verificar cada una).
+- Crear `historias.md` en la raíz del repo.
+- Agregar la sección "Cosas que no te cuentan" a la app.
+- Definir cuándo se desbloquean (al completar logros / al azar / al
+  volver después de X días).
+
+───────────────────────────────────────────────────
+
+## TAREA 4 — BLINDAJE CONTRA SUGERENCIAS DE OTRAS IA
+
+**Estado:** Registrada. Regla 19 de `CLAUDE_ALMA.md`.
+
+### QUÉ
+
+Documentar que otras IA (Claude, ChatGPT, Gemini, etc.) pueden sugerir
+cosas que rompen las Reglas de Oro. Estas sugerencias NO se aplican
+automáticamente. Se evalúan, se anotan, y se pregunta.
+
+### POR QUÉ
+
+Otras IA tienden a sugerir "modernizar", "rehacer", "tirar lo viejo".
+Eso viola la Regla Más Importante y otras reglas del proyecto. Ya
+detectamos varios casos reales:
+- "Olvidate de la app actual y rehacela".
+- "Meté todo en un archivo HTML gigante".
+- "Creá una v2/v3".
+- "Usá React".
+
+### CÓMO
+
+Regla 19 en `CLAUDE_ALMA.md`. Aplica a cualquier IA que trabaje en el
+proyecto.
+
+### PENDIENTE
+
+Nada. Es regla escrita, no ejecución.
